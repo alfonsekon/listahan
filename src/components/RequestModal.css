@@ -73,7 +73,7 @@
 }
 
 .type-badge.addPayment {
-  background: #22c55e;
+  background: var(--primary);
   color: white;
 }
 
