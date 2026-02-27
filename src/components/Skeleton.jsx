@@ -10,6 +10,7 @@ export function SkeletonList({ isReadOnly = false }) {
         </div>
         <div className="header-actions">
           <div className="skeleton skeleton-action-btn"></div>
+          <div className="skeleton skeleton-requests-btn"></div>
           <div className="skeleton skeleton-action-btn"></div>
         </div>
       </header>
@@ -39,8 +40,12 @@ export function SkeletonList({ isReadOnly = false }) {
         ))}
       </div>
 
+      <div className="skeleton-extra-payment">
+        <div className="skeleton skeleton-extra-payment-btn"></div>
+      </div>
+
       <div className="skeleton-totals">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="skeleton skeleton-total-row"></div>
         ))}
       </div>
@@ -66,7 +71,7 @@ export function SkeletonItem() {
 export function SkeletonTotals() {
   return (
     <div className="skeleton-totals">
-      {[1, 2, 3].map((i) => (
+      {[1, 2, 3, 4].map((i) => (
         <div key={i} className="skeleton skeleton-total-row"></div>
       ))}
     </div>

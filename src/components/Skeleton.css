@@ -124,6 +124,11 @@
   height: 36px;
 }
 
+.skeleton-requests-btn {
+  width: 90px;
+  height: 36px;
+}
+
 .skeleton-selector {
   width: 150px;
   height: 40px;
@@ -169,10 +174,10 @@
 }
 
 .skeleton-extra-payment {
-  padding: 12px 16px;
   background: var(--card-bg);
   border-radius: 8px;
   margin-bottom: 16px;
+  padding: 12px 16px;
 }
 
 .skeleton-extra-payment-btn {
