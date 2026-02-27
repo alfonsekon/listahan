@@ -1,0 +1,97 @@
+.share-modal {
+  max-width: 360px;
+  text-align: center;
+}
+
+.share-modal h2 {
+  margin: 0 0 24px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.share-url-section,
+.qr-section {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.share-url-section label,
+.qr-section label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.url-row {
+  display: flex;
+  gap: 8px;
+}
+
+.share-url-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.copy-btn {
+  padding: 10px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  opacity: 0.9;
+}
+
+.qr-section {
+  text-align: center;
+}
+
+.qr-section label {
+  text-align: center;
+}
+
+.qr-container {
+  display: inline-block;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+}
+
+.qr-hint {
+  margin: 12px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.share-modal .modal-actions {
+  justify-content: center;
+}
+
+.close-btn {
+  padding: 10px 24px;
+  background: var(--hover-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--border-color);
+}

@@ -1,0 +1,86 @@
+.extra-payment-modal {
+  max-width: 320px;
+}
+
+.extra-payment-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.extra-payment-modal label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.amount-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.extra-payment-modal .currency {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.extra-payment-modal .amount-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.extra-payment-modal .amount-input:focus {
+  border-color: var(--primary);
+}
+
+.extra-payment-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.extra-payment-modal .cancel-btn,
+.extra-payment-modal .create-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.extra-payment-modal .cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.extra-payment-modal .cancel-btn:hover {
+  background: var(--hover-bg);
+}
+
+.extra-payment-modal .create-btn {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.extra-payment-modal .create-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.extra-payment-modal .create-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

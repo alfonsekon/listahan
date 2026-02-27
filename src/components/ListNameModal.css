@@ -1,0 +1,75 @@
+.list-name-modal {
+  max-width: 360px;
+}
+
+.list-name-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.list-name-modal label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.list-name-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.list-name-input:focus {
+  border-color: var(--primary);
+}
+
+.list-name-modal .hint {
+  margin: 8px 0 20px 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.list-name-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.list-name-modal .cancel-btn,
+.list-name-modal .create-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.list-name-modal .cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.list-name-modal .cancel-btn:hover {
+  background: var(--hover-bg);
+}
+
+.list-name-modal .create-btn {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.list-name-modal .create-btn:hover {
+  opacity: 0.9;
+}

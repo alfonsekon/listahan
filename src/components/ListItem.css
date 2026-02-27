@@ -1,0 +1,120 @@
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.list-item.paid {
+  opacity: 0.6;
+}
+
+.list-item.paid .item-name {
+  text-decoration: line-through;
+}
+
+.checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-wrapper input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.checkbox-wrapper:hover .checkmark {
+  border-color: var(--primary);
+}
+
+.checkbox-wrapper input:checked ~ .checkmark {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkmark::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-wrapper input:checked ~ .checkmark::after {
+  display: block;
+}
+
+.item-name {
+  flex: 1;
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: default;
+}
+
+.list-item:not(.paid):not(:has(.edit-input)) .item-name {
+  cursor: pointer;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 1rem;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.item-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 100px;
+  text-align: right;
+}
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.delete-btn svg {
+  width: 16px;
+  height: 16px;
+}

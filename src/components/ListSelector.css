@@ -1,0 +1,146 @@
+.list-selector {
+  position: relative;
+}
+
+.selector-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  max-width: 200px;
+}
+
+.selector-trigger:hover {
+  background: var(--hover-bg);
+}
+
+.current-list-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arrow {
+  font-size: 0.7rem;
+  transition: transform 0.2s;
+  color: var(--text-secondary);
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dropdown-item:hover {
+  background: var(--hover-bg);
+}
+
+.dropdown-item.active {
+  background: var(--primary);
+  color: white;
+}
+
+.dropdown-item.active .list-actions .action-btn {
+  opacity: 0.8;
+}
+
+.dropdown-item.active .list-actions .action-btn:hover {
+  opacity: 1;
+}
+
+.list-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.dropdown-item:hover .list-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.action-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.rename-input {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.95rem;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}
+
+.create-item {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.create-item:hover {
+  background: var(--hover-bg);
+}
