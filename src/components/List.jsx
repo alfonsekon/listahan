@@ -13,6 +13,7 @@ import { ListNameModal } from './ListNameModal'
 import { ExtraPaymentModal } from './ExtraPaymentModal'
 import { RequestModal } from './RequestModal'
 import { RequestsPanel } from './RequestsPanel'
+import { Toast } from './Toast'
 import { SkeletonList } from './Skeleton'
 import './List.css'
 
@@ -36,6 +37,7 @@ export function List() {
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
   const [requestsPanelOpen, setRequestsPanelOpen] = useState(false)
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
 
   const { 
     lists, 
@@ -174,11 +176,21 @@ export function List() {
   }
 
   const handleAcceptRequest = async (request) => {
-    await acceptRequest(request)
+    try {
+      await acceptRequest(request)
+      setToast({ visible: true, message: 'Request accepted', type: 'success' })
+    } catch (error) {
+      setToast({ visible: true, message: 'Failed to accept request', type: 'error' })
+    }
   }
 
   const handleRejectRequest = async (request) => {
-    await rejectRequest(request)
+    try {
+      await rejectRequest(request)
+      setToast({ visible: true, message: 'Request rejected', type: 'success' })
+    } catch (error) {
+      setToast({ visible: true, message: 'Failed to reject request', type: 'error' })
+    }
   }
 
   if (!currentListId) {
@@ -391,6 +403,13 @@ export function List() {
         onReject={handleRejectRequest}
         items={items}
       />
+
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.visible}
+        onClose={() => setToast({ ...toast, visible: false })}
+      />
     </div>
   )
 }
@@ -404,6 +423,7 @@ export function SharedList() {
   const [requestModalOpen, setRequestModalOpen] = useState(false)
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
 
   const isReadOnly = true
 
@@ -433,10 +453,15 @@ export function SharedList() {
   }
 
   const handleSubmitRequest = async (requestData) => {
-    await createRequest({
-      ...requestData,
-      listId: listId,
-    })
+    try {
+      await createRequest({
+        ...requestData,
+        listId: listId,
+      })
+      setToast({ visible: true, message: 'Request sent successfully!', type: 'success' })
+    } catch (error) {
+      setToast({ visible: true, message: 'Failed to send request', type: 'error' })
+    }
   }
 
   const handleGoToMyLists = () => {
@@ -516,7 +541,7 @@ export function SharedList() {
 
       <div className="extra-payments-section">
         <button 
-          className="add-extra-payment-btn request-payment-btn"
+          className="add-extra-payment-btn"
           onClick={handleRequestPaymentClick}
         >
           + Add Payment Made
@@ -579,6 +604,13 @@ export function SharedList() {
         initialType={requestType}
         initialItemId={selectedItemId}
         defaultType={requestType}
+      />
+
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.visible}
+        onClose={() => setToast({ ...toast, visible: false })}
       />
     </div>
   )
