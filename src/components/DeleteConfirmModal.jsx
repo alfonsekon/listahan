@@ -18,7 +18,7 @@ export function DeleteConfirmModal({ isOpen, listName, onConfirm, onCancel }) {
           <button className="cancel-btn" onClick={onCancel}>
             Cancel
           </button>
-          <button className="delete-btn" onClick={onConfirm}>
+          <button className="delete-conf-btn" onClick={onConfirm}>
             Delete
           </button>
         </div>

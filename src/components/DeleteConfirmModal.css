@@ -98,12 +98,18 @@
   background: var(--hover-bg);
 }
 
-.modal-content .delete-btn {
+.delete-conf-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
   background: var(--danger);
   border: none;
   color: white;
 }
 
-.modal-content .delete-btn:hover {
+.delete-conf-btn:hover {
   opacity: 0.9;
 }
