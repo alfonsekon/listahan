@@ -70,6 +70,15 @@
   font-size: 1rem;
   color: var(--text-primary);
   cursor: default;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.item-name.editable:hover {
+  background: var(--hover-bg);
+  cursor: pointer;
 }
 
 .list-item:not(.paid):not(:has(.edit-input)) .item-name {
@@ -87,12 +96,31 @@
   outline: none;
 }
 
+.edit-name {
+  min-width: 0;
+}
+
+.edit-amount {
+  width: 100px;
+  text-align: right;
+  font-weight: 600;
+}
+
 .item-amount {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
   min-width: 100px;
   text-align: right;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.item-amount.editable:hover {
+  background: var(--hover-bg);
+  cursor: pointer;
 }
 
 .delete-btn {

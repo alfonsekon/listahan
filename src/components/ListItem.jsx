@@ -1,23 +1,71 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import './ListItem.css'
 
-export function ListItem({ item, onToggle, onRemove, onUpdateName, isReadOnly }) {
-  const [isEditing, setIsEditing] = useState(false)
+export function ListItem({ item, onToggle, onRemove, onUpdateName, onUpdateAmount, isReadOnly }) {
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [isEditingAmount, setIsEditingAmount] = useState(false)
   const [editName, setEditName] = useState(item.name)
+  const [editAmount, setEditAmount] = useState(item.amount.toString())
+  const nameInputRef = useRef(null)
+  const amountInputRef = useRef(null)
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (isEditingName && nameInputRef.current) {
+      nameInputRef.current.focus()
+      nameInputRef.current.select()
+    }
+  }, [isEditingName])
+
+  useEffect(() => {
+    if (isEditingAmount && amountInputRef.current) {
+      amountInputRef.current.focus()
+      amountInputRef.current.select()
+    }
+  }, [isEditingAmount])
+
+  const handleSaveName = () => {
     if (editName.trim()) {
       onUpdateName(item.id, editName.trim())
+    } else {
+      setEditName(item.name)
     }
-    setIsEditing(false)
+    setIsEditingName(false)
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSave()
-    if (e.key === 'Escape') {
-      setEditName(item.name)
-      setIsEditing(false)
+  const handleSaveAmount = () => {
+    const amount = parseFloat(editAmount)
+    if (!isNaN(amount) && amount >= 0) {
+      onUpdateAmount(item.id, amount)
+    } else {
+      setEditAmount(item.amount.toString())
     }
+    setIsEditingAmount(false)
+  }
+
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveName()
+    } else if (e.key === 'Escape') {
+      setEditName(item.name)
+      setIsEditingName(false)
+    }
+  }
+
+  const handleAmountKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveAmount()
+    } else if (e.key === 'Escape') {
+      setEditAmount(item.amount.toString())
+      setIsEditingAmount(false)
+    }
+  }
+
+  const handleNameBlur = () => {
+    handleSaveName()
+  }
+
+  const handleAmountBlur = () => {
+    handleSaveAmount()
   }
 
   return (
@@ -32,30 +80,49 @@ export function ListItem({ item, onToggle, onRemove, onUpdateName, isReadOnly })
         <span className="checkmark"></span>
       </label>
 
-      {isEditing && !isReadOnly ? (
+      {isEditingName && !isReadOnly ? (
         <input
+          ref={nameInputRef}
           type="text"
-          className="edit-input"
+          className="edit-input edit-name"
           value={editName}
           onChange={(e) => setEditName(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={handleKeyDown}
-          autoFocus
+          onBlur={handleNameBlur}
+          onKeyDown={handleNameKeyDown}
           autocomplete="off"
         />
       ) : (
         <span 
-          className="item-name" 
-          onDoubleClick={() => !isReadOnly && setIsEditing(true)}
-          title={isReadOnly ? 'View only' : 'Double-click to edit'}
+          className="item-name editable" 
+          onClick={() => !isReadOnly && setIsEditingName(true)}
+          title={isReadOnly ? 'View only' : 'Click to edit'}
         >
           {item.name}
         </span>
       )}
 
-      <span className="item-amount">
-        ₱{item.amount.toLocaleString()}
-      </span>
+      {isEditingAmount && !isReadOnly ? (
+        <input
+          ref={amountInputRef}
+          type="number"
+          className="edit-input edit-amount"
+          value={editAmount}
+          onChange={(e) => setEditAmount(e.target.value)}
+          onBlur={handleAmountBlur}
+          onKeyDown={handleAmountKeyDown}
+          step="0.01"
+          min="0"
+          autocomplete="off"
+        />
+      ) : (
+        <span 
+          className="item-amount editable" 
+          onClick={() => !isReadOnly && setIsEditingAmount(true)}
+          title={isReadOnly ? 'View only' : 'Click to edit'}
+        >
+          ₱{item.amount.toLocaleString()}
+        </span>
+      )}
 
       {!isReadOnly && (
         <button
