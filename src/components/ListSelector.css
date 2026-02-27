@@ -97,12 +97,9 @@
 .list-actions {
   display: flex;
   gap: 4px;
-  opacity: 0;
-  transition: opacity 0.15s;
 }
 
 .dropdown-item:hover .list-actions {
-  opacity: 1;
 }
 
 .action-btn {

@@ -95,20 +95,6 @@
   text-align: right;
 }
 
-.delete-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
 .delete-btn:hover {
   background: var(--danger-bg);
   color: var(--danger);

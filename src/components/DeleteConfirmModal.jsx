@@ -11,7 +11,7 @@ export function DeleteConfirmModal({ isOpen, listName, onConfirm, onCancel }) {
         <div className="warning-box">
           <span className="warning-icon">⚠️</span>
           <p>This action cannot be undone.</p>
-          <p>All data will be permanently deleted from the database.</p>
+          <p>All data will be permanently deleted.</p>
         </div>
 
         <div className="modal-actions">
