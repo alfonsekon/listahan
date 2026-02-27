@@ -10,7 +10,15 @@ import { DeleteConfirmModal } from './DeleteConfirmModal'
 import { ShareModal } from './ShareModal'
 import { ListNameModal } from './ListNameModal'
 import { ExtraPaymentModal } from './ExtraPaymentModal'
+import { SkeletonList } from './Skeleton'
 import './List.css'
+
+function formatPaymentDate(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+}
 
 export function List() {
   const { listId } = useParams()
@@ -52,6 +60,7 @@ export function List() {
     removeItem,
     togglePaid,
     updateItemName,
+    updateItemAmount,
     deleteListFromDb,
     createListInDb,
     updateListNameInDb,
@@ -86,8 +95,8 @@ export function List() {
     }
   }
 
-  const handleAddExtraPayment = (amount) => {
-    addExtraPayment(amount)
+  const handleAddExtraPayment = (amount, date) => {
+    addExtraPayment(amount, date)
   }
 
   const handleShare = () => {
@@ -138,19 +147,11 @@ export function List() {
   }
 
   if (!currentListId) {
-    return (
-      <div className="list-container">
-        <div className="loading">Loading...</div>
-      </div>
-    )
+    return <SkeletonList />
   }
 
   if (loading) {
-    return (
-      <div className="list-container">
-        <div className="loading">Loading...</div>
-      </div>
-    )
+    return <SkeletonList />
   }
 
   if (error) {
@@ -164,7 +165,7 @@ export function List() {
   return (
     <div className="list-container">
       <header className="header">
-        <h1>💰 Utangs</h1>
+        <h1>Palista</h1>
         <div className="header-center">
           <ListSelector
             lists={lists}
@@ -220,6 +221,7 @@ export function List() {
               onToggle={togglePaid}
               onRemove={removeItem}
               onUpdateName={updateItemName}
+              onUpdateAmount={updateItemAmount}
               isReadOnly={isReadOnly}
             />
           ))
@@ -232,14 +234,16 @@ export function List() {
           onClick={() => setExtraPaymentModalOpen(true)}
           disabled={!isInitialized}
         >
-          + Add Extra Payment
+          + Add Payment Made
         </button>
         
         {extraPayments.length > 0 && (
           <ul className="extra-payments-list">
             {extraPayments.map((ep) => (
               <li key={ep.id} className="extra-payment-item">
-                <span className="ep-name">{ep.name}</span>
+                <span className="ep-name">
+                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}
+                </span>
                 <span className="ep-amount">₱{ep.amount.toLocaleString()}</span>
                 <button 
                   className="ep-remove-btn"
@@ -355,11 +359,7 @@ export function SharedList() {
   }
 
   if (loading) {
-    return (
-      <div className="list-container">
-        <div className="loading">Loading...</div>
-      </div>
-    )
+    return <SkeletonList isReadOnly={true} />
   }
 
   if (error) {
@@ -374,7 +374,7 @@ export function SharedList() {
     return (
       <div className="list-container">
         <header className="header">
-          <h1>💰 Utangs</h1>
+          <h1>Palista</h1>
           <div className="header-actions">
             <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
               {theme === 'light' ? '🌙' : '☀️'}
@@ -396,7 +396,7 @@ export function SharedList() {
   return (
     <div className="list-container read-only">
       <header className="header">
-        <h1>💰 Utangs</h1>
+        <h1>Palista</h1>
         <div className="header-actions">
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
@@ -421,6 +421,7 @@ export function SharedList() {
               onToggle={() => {}}
               onRemove={() => {}}
               onUpdateName={() => {}}
+              onUpdateAmount={() => {}}
               isReadOnly={isReadOnly}
             />
           ))
@@ -432,7 +433,9 @@ export function SharedList() {
           <ul className="extra-payments-list">
             {extraPayments.map((ep) => (
               <li key={ep.id} className="extra-payment-item">
-                <span className="ep-name">{ep.name}</span>
+                <span className="ep-name">
+                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}
+                </span>
                 <span className="ep-amount">₱{ep.amount.toLocaleString()}</span>
               </li>
             ))}

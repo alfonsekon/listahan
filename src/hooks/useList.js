@@ -93,6 +93,13 @@ export function useList(listId, isReadOnly = false) {
     })
   }, [isReadOnly, listId])
 
+  const updateItemAmount = useCallback(async (itemId, newAmount) => {
+    if (isReadOnly) return
+    await update(ref(database, `lists/${listId}/items/${itemId}`), {
+      amount: parseFloat(newAmount),
+    })
+  }, [isReadOnly, listId])
+
   const deleteListFromDb = useCallback(async () => {
     if (isReadOnly) return
     await remove(ref(database, `lists/${listId}`))
@@ -134,16 +141,16 @@ export function useList(listId, isReadOnly = false) {
     setIsInitialized(true)
   }, [isReadOnly])
 
-  const addExtraPayment = useCallback(async (amount) => {
+  const addExtraPayment = useCallback(async (amount, date) => {
     if (isReadOnly) return
-    const epCount = extraPayments.length + 1
     const newEpRef = ref(database, `lists/${listId}/extraPayments`)
     await push(newEpRef, {
-      name: `Extra Payment ${epCount}`,
+      name: 'Payment',
       amount: parseFloat(amount),
+      date: date || null,
       createdAt: Date.now(),
     })
-  }, [isReadOnly, extraPayments.length, listId])
+  }, [isReadOnly, listId])
 
   const removeExtraPayment = useCallback(async (epId) => {
     if (isReadOnly) return
@@ -206,6 +213,7 @@ export function useList(listId, isReadOnly = false) {
     removeItem,
     togglePaid,
     updateItemName,
+    updateItemAmount,
     deleteListFromDb,
     createListInDb,
     updateListNameInDb,

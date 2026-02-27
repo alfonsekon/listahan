@@ -20,7 +20,74 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 20px;
+}
+
+.extra-payment-modal .date-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
   margin-bottom: 24px;
+}
+
+.extra-payment-modal .date-input:focus {
+  border-color: var(--primary);
+}
+
+.extra-payment-modal .add-date-btn {
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+}
+
+.extra-payment-modal .add-date-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.date-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.date-picker-wrapper .date-input {
+  flex: 1;
+}
+
+.remove-date-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-date-btn:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .extra-payment-modal .currency {
