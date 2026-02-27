@@ -147,3 +147,28 @@
   width: 16px;
   height: 16px;
 }
+
+.request-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.request-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.request-btn svg {
+  width: 16px;
+  height: 16px;
+}

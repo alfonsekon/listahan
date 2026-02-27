@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useList, generateListId } from '../hooks/useList'
 import { useLists } from '../hooks/useLists'
 import { useTheme } from '../hooks/useTheme'
+import { useRequests } from '../hooks/useRequests'
 import { generateRandomName } from '../utils/randomName'
 import { ListItem } from './ListItem'
 import { ListSelector } from './ListSelector'
@@ -10,6 +11,8 @@ import { DeleteConfirmModal } from './DeleteConfirmModal'
 import { ShareModal } from './ShareModal'
 import { ListNameModal } from './ListNameModal'
 import { ExtraPaymentModal } from './ExtraPaymentModal'
+import { RequestModal } from './RequestModal'
+import { RequestsPanel } from './RequestsPanel'
 import { SkeletonList } from './Skeleton'
 import './List.css'
 
@@ -29,6 +32,10 @@ export function List() {
   const [listToDelete, setListToDelete] = useState(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [listNameModalOpen, setListNameModalOpen] = useState(false)
+  const [requestModalOpen, setRequestModalOpen] = useState(false)
+  const [requestType, setRequestType] = useState('markPaid')
+  const [selectedItemId, setSelectedItemId] = useState(null)
+  const [requestsPanelOpen, setRequestsPanelOpen] = useState(false)
 
   const { 
     lists, 
@@ -72,6 +79,7 @@ export function List() {
   } = useList(currentListId, isReadOnly)
 
   const { theme, toggleTheme } = useTheme()
+  const { requests, pendingCount, createRequest, acceptRequest, rejectRequest } = useRequests(currentListId)
   const [showPaidBreakdown, setShowPaidBreakdown] = useState(false)
   const [extraPaymentModalOpen, setExtraPaymentModalOpen] = useState(false)
 
@@ -146,6 +154,33 @@ export function List() {
     }
   }
 
+  const handleRequestClick = (itemId) => {
+    setSelectedItemId(itemId)
+    setRequestType('markPaid')
+    setRequestModalOpen(true)
+  }
+
+  const handleRequestPaymentClick = () => {
+    setSelectedItemId(null)
+    setRequestType('addPayment')
+    setRequestModalOpen(true)
+  }
+
+  const handleSubmitRequest = async (requestData) => {
+    await createRequest({
+      ...requestData,
+      listId: currentListId,
+    })
+  }
+
+  const handleAcceptRequest = async (request) => {
+    await acceptRequest(request)
+  }
+
+  const handleRejectRequest = async (request) => {
+    await rejectRequest(request)
+  }
+
   if (!currentListId) {
     return <SkeletonList />
   }
@@ -180,6 +215,12 @@ export function List() {
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
+          {!isReadOnly && (
+            <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
+              Requests
+              {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
+            </button>
+          )}
           <button className="share-btn" onClick={handleShare} title="Copy link">
             🔗 Share
           </button>
@@ -222,6 +263,7 @@ export function List() {
               onRemove={removeItem}
               onUpdateName={updateItemName}
               onUpdateAmount={updateItemAmount}
+              onRequest={isReadOnly ? handleRequestClick : undefined}
               isReadOnly={isReadOnly}
             />
           ))
@@ -229,13 +271,22 @@ export function List() {
       </ul>
 
       <div className="extra-payments-section">
-        <button 
-          className="add-extra-payment-btn"
-          onClick={() => setExtraPaymentModalOpen(true)}
-          disabled={!isInitialized}
-        >
-          + Add Payment Made
-        </button>
+        {!isReadOnly ? (
+          <button 
+            className="add-extra-payment-btn"
+            onClick={() => setExtraPaymentModalOpen(true)}
+            disabled={!isInitialized}
+          >
+            + Add Payment Made
+          </button>
+        ) : (
+          <button 
+            className="add-extra-payment-btn request-payment-btn"
+            onClick={handleRequestPaymentClick}
+          >
+            + Add Payment Made
+          </button>
+        )}
         
         {extraPayments.length > 0 && (
           <ul className="extra-payments-list">
@@ -323,6 +374,23 @@ export function List() {
         onClose={() => setExtraPaymentModalOpen(false)}
         onCreate={handleAddExtraPayment}
       />
+
+      <RequestModal
+        isOpen={requestModalOpen}
+        onClose={() => setRequestModalOpen(false)}
+        onSubmit={handleSubmitRequest}
+        initialType={requestType}
+        initialItemId={selectedItemId}
+      />
+
+      <RequestsPanel
+        isOpen={requestsPanelOpen}
+        onClose={() => setRequestsPanelOpen(false)}
+        requests={requests}
+        onAccept={handleAcceptRequest}
+        onReject={handleRejectRequest}
+        items={items}
+      />
     </div>
   )
 }
@@ -333,6 +401,9 @@ export function SharedList() {
   const { theme, toggleTheme } = useTheme()
   const [copied, setCopied] = useState(false)
   const [showPaidBreakdown, setShowPaidBreakdown] = useState(false)
+  const [requestModalOpen, setRequestModalOpen] = useState(false)
+  const [requestType, setRequestType] = useState('markPaid')
+  const [selectedItemId, setSelectedItemId] = useState(null)
 
   const isReadOnly = true
 
@@ -347,11 +418,25 @@ export function SharedList() {
     totals,
   } = useList(listId, isReadOnly)
 
-  const handleCopyList = async () => {
-    const newListId = await copyList()
-    navigate(`/list/${newListId}`)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const { createRequest } = useRequests(listId)
+
+  const handleRequestClick = (itemId) => {
+    setSelectedItemId(itemId)
+    setRequestType('markPaid')
+    setRequestModalOpen(true)
+  }
+
+  const handleRequestPaymentClick = () => {
+    setSelectedItemId(null)
+    setRequestType('addPayment')
+    setRequestModalOpen(true)
+  }
+
+  const handleSubmitRequest = async (requestData) => {
+    await createRequest({
+      ...requestData,
+      listId: listId,
+    })
   }
 
   const handleGoToMyLists = () => {
@@ -422,14 +507,22 @@ export function SharedList() {
               onRemove={() => {}}
               onUpdateName={() => {}}
               onUpdateAmount={() => {}}
+              onRequest={handleRequestClick}
               isReadOnly={isReadOnly}
             />
           ))
         )}
       </ul>
 
-      {extraPayments.length > 0 && (
-        <div className="extra-payments-section">
+      <div className="extra-payments-section">
+        <button 
+          className="add-extra-payment-btn request-payment-btn"
+          onClick={handleRequestPaymentClick}
+        >
+          + Add Payment Made
+        </button>
+        
+        {extraPayments.length > 0 && (
           <ul className="extra-payments-list">
             {extraPayments.map((ep) => (
               <li key={ep.id} className="extra-payment-item">
@@ -440,8 +533,8 @@ export function SharedList() {
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="totals">
         <div className="total-row">
@@ -478,6 +571,15 @@ export function SharedList() {
       {/* <button className="copy-list-btn" onClick={handleCopyList}>
         {copied ? '✓ Copied!' : '📋 Copy to My List'}
       </button> */}
+
+      <RequestModal
+        isOpen={requestModalOpen}
+        onClose={() => setRequestModalOpen(false)}
+        onSubmit={handleSubmitRequest}
+        initialType={requestType}
+        initialItemId={selectedItemId}
+        defaultType={requestType}
+      />
     </div>
   )
 }

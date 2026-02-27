@@ -48,6 +48,39 @@
   background: var(--hover-bg);
 }
 
+.requests-btn {
+  position: relative;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.requests-btn:hover {
+  background: var(--hover-bg);
+}
+
+.requests-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--danger);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
 .add-form {
   display: flex;
   gap: 8px;
@@ -249,7 +282,18 @@
 
 .add-extra-payment-btn:hover {
   background: var(--hover-bg);
-  border-color: var(--primary);
+}
+
+.request-payment-btn {
+  background: #22c55e;
+  border-style: solid;
+  border-color: #22c55e;
+  color: white;
+}
+
+.request-payment-btn:hover {
+  background: #16a34a;
+  border-color: #16a34a;
 }
 
 .extra-payments-list {

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './ListItem.css'
 
-export function ListItem({ item, onToggle, onRemove, onUpdateName, onUpdateAmount, isReadOnly }) {
+export function ListItem({ item, onToggle, onRemove, onUpdateName, onUpdateAmount, onRequest, isReadOnly }) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [isEditingAmount, setIsEditingAmount] = useState(false)
   const [editName, setEditName] = useState(item.name)
@@ -125,13 +125,27 @@ export function ListItem({ item, onToggle, onRemove, onUpdateName, onUpdateAmoun
       )}
 
       {!isReadOnly && (
+        <>
+          <button
+            className="delete-btn"
+            onClick={() => onRemove(item.id)}
+            title="Remove"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      {isReadOnly && onRequest && (
         <button
-          className="delete-btn"
-          onClick={() => onRemove(item.id)}
-          title="Remove"
+          className="request-btn"
+          onClick={() => onRequest(item.id)}
+          title="Send request"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 6L6 18M6 6l12 12" />
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
           </svg>
         </button>
       )}
