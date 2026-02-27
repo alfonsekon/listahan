@@ -1,0 +1,189 @@
+.request-modal {
+  max-width: 360px;
+}
+
+.request-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.request-modal label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.request-type-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.type-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--card-bg);
+}
+
+.type-option input {
+  display: none;
+}
+
+.type-option.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.type-option.selected .type-label {
+  color: white;
+}
+
+.type-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.request-type-header {
+  margin-bottom: 20px;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.type-badge.markPaid {
+  background: var(--primary);
+  color: white;
+}
+
+.type-badge.addPayment {
+  background: #22c55e;
+  color: white;
+}
+
+.amount-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.request-modal .currency {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.request-modal .amount-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.request-modal .amount-input:focus {
+  border-color: var(--primary);
+}
+
+.request-modal .date-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 20px;
+}
+
+.request-modal .date-input:focus {
+  border-color: var(--primary);
+}
+
+.message-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+
+.message-input:focus {
+  border-color: var(--primary);
+}
+
+.message-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.request-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.request-modal .cancel-btn,
+.request-modal .submit-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.request-modal .cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.request-modal .cancel-btn:hover {
+  background: var(--hover-bg);
+}
+
+.request-modal .submit-btn {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.request-modal .submit-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.request-modal .submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
