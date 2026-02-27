@@ -49,6 +49,7 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
               placeholder="0"
               className="amount-input"
               autoFocus
+              autocomplete="off"
             />
           </div>
           

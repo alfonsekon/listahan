@@ -103,6 +103,7 @@ export function ListSelector({
                   onBlur={() => handleRenameSubmit(list.id)}
                   onKeyDown={(e) => handleRenameKeyDown(e, list.id)}
                   onClick={(e) => e.stopPropagation()}
+                  autocomplete="off"
                 />
               ) : (
                 <>

@@ -41,6 +41,7 @@ export function ListItem({ item, onToggle, onRemove, onUpdateName, isReadOnly })
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
           autoFocus
+          autocomplete="off"
         />
       ) : (
         <span 

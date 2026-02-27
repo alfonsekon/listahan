@@ -44,6 +44,7 @@ export function ListNameModal({ isOpen, onClose, onCreate, defaultName }) {
             onKeyDown={handleKeyDown}
             placeholder="Enter list name"
             className="list-name-input"
+            autocomplete="off"
           />
           <p className="hint"></p>
           

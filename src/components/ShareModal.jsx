@@ -34,6 +34,7 @@ export function ShareModal({ isOpen, onClose, listId, listName }) {
               value={shareUrl}
               readOnly
               className="share-url-input"
+              autocomplete="off"
             />
             <button className="copy-btn" onClick={handleCopy}>
               {copied ? '✓ Copied' : 'Copy'}

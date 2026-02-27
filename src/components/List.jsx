@@ -192,6 +192,7 @@ export function List() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="name-input"
+          autocomplete="off"
         />
         <input
           type="text"
@@ -199,6 +200,7 @@ export function List() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="amount-input"
+          autocomplete="off"
         />
         <button type="submit" className="add-btn" disabled={!name.trim() || !amount || !isInitialized}>
           Add
@@ -283,6 +285,13 @@ export function List() {
           </span>
         </div>
       </div>
+
+      <button 
+        className="delete-list-btn"
+        onClick={() => handleDeleteClick(currentListId)}
+      >
+        Delete List
+      </button>
 
       <DeleteConfirmModal
         isOpen={deleteModalOpen}
