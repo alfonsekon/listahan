@@ -7,10 +7,10 @@ export function ListNameModal({ isOpen, onClose, onCreate, defaultName }) {
 
   useEffect(() => {
     if (isOpen) {
-      setName(defaultName || '')
+      setName('')
       setTimeout(() => inputRef.current?.focus(), 100)
     }
-  }, [isOpen, defaultName])
+  }, [isOpen])
 
   const handleSubmit = (e) => {
     e.preventDefault()

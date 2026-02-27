@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { generateRandomName } from '../utils/randomName'
 
 const STORAGE_KEY = 'owelist_data'
 
@@ -48,10 +49,11 @@ export function useLists() {
     }
   }, [data, isInitialized])
 
-  const createList = useCallback((name = 'New List') => {
+  const createList = useCallback((name) => {
+    const listName = name || generateRandomName()
     const newList = {
       id: generateId(),
-      name,
+      name: listName,
       createdAt: Date.now(),
     }
     setData((prev) => ({
@@ -72,7 +74,7 @@ export function useLists() {
         } else {
           const newList = {
             id: generateId(),
-            name: 'New List',
+            name: generateRandomName(),
             createdAt: Date.now(),
           }
           newLists.push(newList)
@@ -111,11 +113,6 @@ export function useLists() {
   const currentListId = data.currentListId
   const listCount = data.lists.length
 
-  const getNextDefaultName = useCallback(() => {
-    const num = listCount + 1
-    return `List ${num}`
-  }, [listCount])
-
   return {
     lists: data.lists,
     currentListId,
@@ -126,6 +123,5 @@ export function useLists() {
     renameList,
     setCurrentList,
     getCurrentList,
-    getNextDefaultName,
   }
 }

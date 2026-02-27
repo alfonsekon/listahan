@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useList, generateListId } from '../hooks/useList'
 import { useLists } from '../hooks/useLists'
 import { useTheme } from '../hooks/useTheme'
+import { generateRandomName } from '../utils/randomName'
 import { ListItem } from './ListItem'
 import { ListSelector } from './ListSelector'
 import { DeleteConfirmModal } from './DeleteConfirmModal'
@@ -29,7 +30,6 @@ export function List() {
     deleteList: deleteListFromStorage, 
     renameList,
     setCurrentList,
-    getNextDefaultName 
   } = useLists()
 
   const currentListId = listId || savedListId
@@ -103,7 +103,7 @@ export function List() {
   }
 
   const handleCreateList = async (listName) => {
-    const name = listName || getNextDefaultName()
+    const name = listName || generateRandomName()
     const newId = createList(name)
     await createListInDb(newId, name)
   }
@@ -311,7 +311,7 @@ export function List() {
         isOpen={listNameModalOpen}
         onClose={() => setListNameModalOpen(false)}
         onCreate={handleCreateList}
-        defaultName={getNextDefaultName()}
+        defaultName={generateRandomName()}
       />
 
       <ExtraPaymentModal
