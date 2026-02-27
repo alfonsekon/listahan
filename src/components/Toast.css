@@ -1,16 +1,22 @@
-.toast {
+.toast-container {
   position: fixed;
   top: 20px;
   right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2000;
+  max-width: 320px;
+}
+
+.toast {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 2000;
   animation: slideInRight 0.3s ease;
-  max-width: 320px;
 }
 
 @keyframes slideInRight {

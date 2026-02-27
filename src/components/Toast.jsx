@@ -1,22 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import './Toast.css'
 
-export function Toast({ message, type, onClose, isVisible }) {
+function ToastItem({ toast, onRemove }) {
   useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        onClose()
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [isVisible, onClose])
-
-  if (!isVisible) return null
+    const timer = setTimeout(() => {
+      onRemove(toast.id)
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [toast.id, onRemove])
 
   return (
-    <div className={`toast ${type}`}>
+    <div className={`toast ${toast.type}`}>
       <span className="toast-icon">
-        {type === 'success' ? (
+        {toast.type === 'success' ? (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 6L9 17l-5-5" />
           </svg>
@@ -27,12 +23,24 @@ export function Toast({ message, type, onClose, isVisible }) {
           </svg>
         )}
       </span>
-      <span className="toast-message">{message}</span>
-      <button className="toast-close" onClick={onClose}>
+      <span className="toast-message">{toast.message}</span>
+      <button className="toast-close" onClick={() => onRemove(toast.id)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M18 6L6 18M6 6l12 12" />
         </svg>
       </button>
+    </div>
+  )
+}
+
+export function Toast({ toasts, onRemove }) {
+  if (!toasts || toasts.length === 0) return null
+
+  return (
+    <div className="toast-container">
+      {toasts.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
+      ))}
     </div>
   )
 }

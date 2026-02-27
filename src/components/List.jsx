@@ -37,7 +37,16 @@ export function List() {
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
   const [requestsPanelOpen, setRequestsPanelOpen] = useState(false)
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
+  const [toasts, setToasts] = useState([])
+
+  const showToast = (message, type = 'success') => {
+    const id = Date.now()
+    setToasts((prev) => [...prev, { id, message, type }])
+  }
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }
 
   const { 
     lists, 
@@ -178,18 +187,18 @@ export function List() {
   const handleAcceptRequest = async (request) => {
     try {
       await acceptRequest(request)
-      setToast({ visible: true, message: 'Request accepted', type: 'success' })
+      showToast('Request accepted', 'success')
     } catch (error) {
-      setToast({ visible: true, message: 'Failed to accept request', type: 'error' })
+      showToast('Failed to accept request', 'error')
     }
   }
 
   const handleRejectRequest = async (request) => {
     try {
       await rejectRequest(request)
-      setToast({ visible: true, message: 'Request rejected', type: 'success' })
+      showToast('Request rejected', 'success')
     } catch (error) {
-      setToast({ visible: true, message: 'Failed to reject request', type: 'error' })
+      showToast('Failed to reject request', 'error')
     }
   }
 
@@ -405,10 +414,8 @@ export function List() {
       />
 
       <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.visible}
-        onClose={() => setToast({ ...toast, visible: false })}
+        toasts={toasts}
+        onRemove={removeToast}
       />
     </div>
   )
@@ -423,7 +430,16 @@ export function SharedList() {
   const [requestModalOpen, setRequestModalOpen] = useState(false)
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
+  const [toasts, setToasts] = useState([])
+
+  const showToast = (message, type = 'success') => {
+    const id = Date.now()
+    setToasts((prev) => [...prev, { id, message, type }])
+  }
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }
 
   const isReadOnly = true
 
@@ -458,9 +474,9 @@ export function SharedList() {
         ...requestData,
         listId: listId,
       })
-      setToast({ visible: true, message: 'Request sent successfully!', type: 'success' })
+      showToast('Request sent successfully!', 'success')
     } catch (error) {
-      setToast({ visible: true, message: 'Failed to send request', type: 'error' })
+      showToast('Failed to send request', 'error')
     }
   }
 
@@ -607,10 +623,8 @@ export function SharedList() {
       />
 
       <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.visible}
-        onClose={() => setToast({ ...toast, visible: false })}
+        toasts={toasts}
+        onRemove={removeToast}
       />
     </div>
   )
