@@ -93,6 +93,14 @@ export function List() {
     listName,
   } = useList(currentListId, isReadOnly)
 
+  useEffect(() => {
+    if (listId && listName) {
+      document.title = `Pede Palista - ${listName}`
+    } else if (!listId) {
+      document.title = 'Pede Palista'
+    }
+  }, [listId, listName])
+
   const { theme, toggleTheme } = useTheme()
   const { requests, pendingCount, createRequest, acceptRequest, rejectRequest } = useRequests(currentListId)
   const [showPaidBreakdown, setShowPaidBreakdown] = useState(false)
@@ -488,6 +496,12 @@ export function SharedList() {
   } = useList(listId, isReadOnly)
 
   const { createRequest } = useRequests(listId)
+
+  useEffect(() => {
+    if (listName) {
+      document.title = `Pede Palista - ${listName}`
+    }
+  }, [listName])
 
   const handleRequestClick = (itemId) => {
     setSelectedItemId(itemId)
