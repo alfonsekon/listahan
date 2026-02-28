@@ -564,7 +564,7 @@ export function SharedList() {
       </header>
 
       <div className="read-only-banner">
-        👁️ Viewing a shared list "{listName}"
+        👁️ Viewing a shared list {listName && `"${listName}"`}
       </div>
 
       <ul className="items-list">
