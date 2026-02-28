@@ -5,6 +5,7 @@ import { useLists } from '../hooks/useLists'
 import { useTheme } from '../hooks/useTheme'
 import { useRequests } from '../hooks/useRequests'
 import { generateRandomName } from '../utils/randomName'
+import { ExportMenu } from './ExportMenu'
 import { ListItem } from './ListItem'
 import { ListSelector } from './ListSelector'
 import { DeleteConfirmModal } from './DeleteConfirmModal'
@@ -13,6 +14,7 @@ import { ListNameModal } from './ListNameModal'
 import { ExtraPaymentModal } from './ExtraPaymentModal'
 import { RequestModal } from './RequestModal'
 import { RequestsPanel } from './RequestsPanel'
+import { ImportModal } from './ImportModal'
 import { Toast } from './Toast'
 import { SkeletonList } from './Skeleton'
 import './List.css'
@@ -37,6 +39,7 @@ export function List() {
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
   const [requestsPanelOpen, setRequestsPanelOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
   const [toasts, setToasts] = useState([])
 
   const showToast = (message, type = 'success') => {
@@ -87,6 +90,7 @@ export function List() {
     addExtraPayment,
     removeExtraPayment,
     totals,
+    listName,
   } = useList(currentListId, isReadOnly)
 
   const { theme, toggleTheme } = useTheme()
@@ -120,6 +124,16 @@ export function List() {
 
   const handleShare = () => {
     setShareModalOpen(true)
+  }
+
+  const handleImport = (importData) => {
+    importData.items.forEach(item => {
+      addItem(item.name, item.amount)
+    })
+    importData.extraPayments.forEach(ep => {
+      addExtraPayment(ep.amount, ep.date)
+    })
+    showToast('List imported successfully!', 'success')
   }
 
   const handleSelectList = (id) => {
@@ -223,30 +237,42 @@ export function List() {
       <header className="header">
         <h1>Palista</h1>
         <div className="header-center">
-          <ListSelector
-            lists={lists}
-            currentListId={currentListId}
-            onSelectList={handleSelectList}
-            onCreateList={handleCreateListClick}
-            onDeleteList={handleDeleteClick}
-            onRenameList={handleRenameList}
-          />
-        </div>
+            <ListSelector
+              lists={lists}
+              currentListId={currentListId}
+              onSelectList={handleSelectList}
+              onCreateList={handleCreateListClick}
+              onDeleteList={handleDeleteClick}
+              onRenameList={handleRenameList}
+            />
+          </div>
         <div className="header-actions">
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-          {!isReadOnly && (
-            <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
-              Requests
-              {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
-            </button>
-          )}
           <button className="share-btn" onClick={handleShare} title="Copy link">
-            🔗 Share
+            Share
           </button>
         </div>
       </header>
+
+      {!isReadOnly && (
+        <div className="sub-header-actions">
+          <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
+            Requests
+            {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
+          </button>
+          <ExportMenu
+            listName={listName}
+            items={items}
+            extraPayments={extraPayments}
+            showToast={showToast}
+          />
+          <button className="import-btn" onClick={() => setImportModalOpen(true)} title="Import list">
+            Import
+          </button>
+        </div>
+      )}
 
       <form className="add-form" onSubmit={handleSubmit}>
         <input
@@ -411,6 +437,13 @@ export function List() {
         onAccept={handleAcceptRequest}
         onReject={handleRejectRequest}
         items={items}
+      />
+
+      <ImportModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImport={handleImport}
+        existingItems={items}
       />
 
       <Toast

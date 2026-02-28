@@ -1,6 +1,6 @@
 .toast-container {
   position: fixed;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
   display: flex;
   flex-direction: column;
@@ -16,16 +16,16 @@
   padding: 14px 16px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: slideInRight 0.3s ease;
+  animation: slideInUp 0.3s ease;
 }
 
-@keyframes slideInRight {
+@keyframes slideInUp {
   from {
-    transform: translateX(100%);
+    transform: translateY(100%);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
