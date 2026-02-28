@@ -16,6 +16,7 @@ dist-ssr
 
 # TODO files
 *_TODO.md
+session-*.md
 
 # Editor directories and files
 .vscode/*
