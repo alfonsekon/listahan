@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useList, generateListId } from '../hooks/useList'
 import { useLists } from '../hooks/useLists'
 import { useTheme } from '../hooks/useTheme'
@@ -29,6 +29,7 @@ function formatPaymentDate(dateStr) {
 export function List() {
   const { listId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -40,6 +41,7 @@ export function List() {
   const [selectedItemId, setSelectedItemId] = useState(null)
   const [requestsPanelOpen, setRequestsPanelOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [toasts, setToasts] = useState([])
 
   const showToast = (message, type = 'success') => {
@@ -68,6 +70,15 @@ export function List() {
       createList('My List')
     }
   }, [hasLists, createList])
+
+  useEffect(() => {
+    if (location.state?.createNewList && hasLists) {
+      const newListName = generateRandomName()
+      const newId = createList(newListName)
+      createListInDb(newId, newListName)
+      navigate('/', { replace: true })
+    }
+  }, [location.state])
 
   const isReadOnly = false
 
@@ -134,7 +145,11 @@ export function List() {
     setShareModalOpen(true)
   }
 
-  const handleImport = (importData) => {
+  const handleImport = (importData, mode) => {
+    if (mode === 'replace') {
+      items.forEach(item => removeItem(item.id))
+      extraPayments.forEach(ep => removeExtraPayment(ep.id))
+    }
     importData.items.forEach(item => {
       addItem(item.name, item.amount)
     })
@@ -243,44 +258,51 @@ export function List() {
   return (
     <div className="list-container">
       <header className="header">
-        <h1>Palista</h1>
-        <div className="header-center">
-            <ListSelector
-              lists={lists}
-              currentListId={currentListId}
-              onSelectList={handleSelectList}
-              onCreateList={handleCreateListClick}
-              onDeleteList={handleDeleteClick}
-              onRenameList={handleRenameList}
-            />
-          </div>
-        <div className="header-actions">
-          <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
-            {theme === 'light' ? '🌙' : '☀️'}
+        <div className="header-left">
+          <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)} title="My Lists">
+            ☰
           </button>
+          <h1>Pede Palista</h1>
+        </div>
+        <div className="header-right">
+          {!isReadOnly && (
+            <>
+              <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
+                Requests
+                {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
+              </button>
+              <ExportMenu
+                listName={listName}
+                items={items}
+                extraPayments={extraPayments}
+                showToast={showToast}
+              />
+              <button className="import-btn" onClick={() => setImportModalOpen(true)} title="Import list">
+                Import
+              </button>
+            </>
+          )}
           <button className="share-btn" onClick={handleShare} title="Copy link">
             Share
+          </button>
+          <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
+            {theme === 'light' ? '🌙' : '☀️'}
           </button>
         </div>
       </header>
 
-      {!isReadOnly && (
-        <div className="sub-header-actions">
-          <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
-            Requests
-            {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
-          </button>
-          <ExportMenu
-            listName={listName}
-            items={items}
-            extraPayments={extraPayments}
-            showToast={showToast}
-          />
-          <button className="import-btn" onClick={() => setImportModalOpen(true)} title="Import list">
-            Import
-          </button>
-        </div>
-      )}
+      <div className="header-center">
+        <ListSelector
+          lists={lists}
+          currentListId={currentListId}
+          onSelectList={handleSelectList}
+          onCreateList={handleCreateListClick}
+          onDeleteList={handleDeleteClick}
+          onRenameList={handleRenameList}
+          isOpen={sidebarOpen}
+          onToggle={setSidebarOpen}
+        />
+      </div>
 
       <form className="add-form" onSubmit={handleSubmit}>
         <input
@@ -471,6 +493,7 @@ export function SharedList() {
   const [requestModalOpen, setRequestModalOpen] = useState(false)
   const [requestType, setRequestType] = useState('markPaid')
   const [selectedItemId, setSelectedItemId] = useState(null)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
   const [toasts, setToasts] = useState([])
 
   const showToast = (message, type = 'success') => {
@@ -528,7 +551,11 @@ export function SharedList() {
   }
 
   const handleGoToMyLists = () => {
-    navigate('/')
+    navigate('/', { state: { createNewList: true } })
+  }
+
+  const handleShare = () => {
+    setShareModalOpen(true)
   }
 
   if (loading) {
@@ -547,8 +574,13 @@ export function SharedList() {
     return (
       <div className="list-container">
         <header className="header">
-          <h1>Palista</h1>
-          <div className="header-actions">
+          <div className="header-left">
+            <button className="sidebar-toggle" onClick={handleGoToMyLists} title="Go to My Lists">
+              ☰
+            </button>
+            <h1>Pede Palista</h1>
+          </div>
+          <div className="header-right">
             <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
@@ -569,16 +601,35 @@ export function SharedList() {
   return (
     <div className="list-container read-only">
       <header className="header">
-        <h1>Palista</h1>
-        <div className="header-actions">
+        <div className="header-left">
+          <button className="sidebar-toggle" onClick={handleGoToMyLists} title="Go to My Lists">
+            ☰
+          </button>
+          <h1>Pede Palista</h1>
+        </div>
+        <div className="header-right">
+          <button className="create-list-btn" onClick={handleGoToMyLists}>
+            + New List
+          </button>
+          <ExportMenu
+            listName={listName}
+            items={items}
+            extraPayments={extraPayments}
+            showToast={showToast}
+          />
+          <button className="share-btn" onClick={handleShare} title="Copy link">
+            Share
+          </button>
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
         </div>
       </header>
 
-      <div className="read-only-banner">
-        👁️ Viewing a shared list {listName && `"${listName}"`}
+      <div className="header-center">
+        <div className="read-only-banner">
+          Viewing "{listName}"
+        </div>
       </div>
 
       <ul className="items-list">
@@ -667,6 +718,15 @@ export function SharedList() {
         initialType={requestType}
         initialItemId={selectedItemId}
         defaultType={requestType}
+      />
+
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        listId={listId}
+        listName={listName}
+        copied={copied}
+        setCopied={setCopied}
       />
 
       <Toast
