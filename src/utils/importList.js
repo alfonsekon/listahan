@@ -71,8 +71,15 @@ export function generateId() {
          Math.random().toString(36).substring(2, 10)
 }
 
-export function prepareImportData(items, extraPayments, mode, existingItems = []) {
+export function prepareImportData(items, extraPayments, mode, existingItems = [], skipDuplicates = true) {
   if (mode === 'replace') {
+    return {
+      items: items.map(item => ({ ...item, id: generateId() })),
+      extraPayments: extraPayments.map(ep => ({ ...ep, id: generateId() })),
+    }
+  }
+
+  if (!skipDuplicates) {
     return {
       items: items.map(item => ({ ...item, id: generateId() })),
       extraPayments: extraPayments.map(ep => ({ ...ep, id: generateId() })),

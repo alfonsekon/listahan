@@ -7,6 +7,7 @@ export function ImportModal({ isOpen, onClose, onImport, existingItems = [] }) {
   const [error, setError] = useState(null)
   const [importMode, setImportMode] = useState(null)
   const [duplicates, setDuplicates] = useState([])
+  const [nonDuplicates, setNonDuplicates] = useState([])
   const [showDuplicatePrompt, setShowDuplicatePrompt] = useState(false)
   const [pastedText, setPastedText] = useState('')
   const fileInputRef = useRef(null)
@@ -69,9 +70,10 @@ export function ImportModal({ isOpen, onClose, onImport, existingItems = [] }) {
 
   const handleMerge = () => {
     setImportMode('merge')
-    const { duplicates: dups } = findDuplicates(existingItems, parsedData.items)
+    const { duplicates: dups, nonDuplicates: nonDups } = findDuplicates(existingItems, parsedData.items)
     if (dups.length > 0) {
       setDuplicates(dups)
+      setNonDuplicates(nonDups)
       setShowDuplicatePrompt(true)
     } else {
       doImport('merge', [])
@@ -83,22 +85,23 @@ export function ImportModal({ isOpen, onClose, onImport, existingItems = [] }) {
     doImport('replace', [])
   }
 
-  const doImport = (mode, itemsToInclude) => {
+  const doImport = (mode, itemsToInclude, skipDuplicates = true) => {
     const importData = prepareImportData(
       itemsToInclude.length > 0 ? itemsToInclude : parsedData.items,
       parsedData.extraPayments,
       mode,
-      existingItems
+      existingItems,
+      skipDuplicates
     )
-    onImport(importData)
+    onImport(importData, mode)
     handleClose()
   }
 
   const handleDuplicateDecision = (importAnyway) => {
     if (importAnyway) {
-      doImport('merge', parsedData.items)
+      doImport('merge', parsedData.items, false)
     } else {
-      doImport('merge', parsedData.nonDuplicates || [])
+      doImport('merge', nonDuplicates, true)
     }
     setShowDuplicatePrompt(false)
   }
@@ -108,6 +111,7 @@ export function ImportModal({ isOpen, onClose, onImport, existingItems = [] }) {
     setError(null)
     setImportMode(null)
     setDuplicates([])
+    setNonDuplicates([])
     setShowDuplicatePrompt(false)
     setPastedText('')
     if (fileInputRef.current) {

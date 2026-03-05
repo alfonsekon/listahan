@@ -203,6 +203,7 @@
 
 .import-modal .modal-actions {
   justify-content: center;
+  margin-top: 14px;
 }
 
 .paste-section {
