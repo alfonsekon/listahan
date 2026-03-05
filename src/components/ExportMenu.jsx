@@ -48,10 +48,10 @@ export function ExportMenu({ listName, items, extraPayments, showToast }) {
       {isOpen && (
         <div className="export-dropdown">
           <button className="export-option" onClick={handleSaveToFile}>
-            💾 Save to File
+            Save to File
           </button>
           <button className="export-option" onClick={handleCopyToClipboard}>
-            📋 Copy to Clipboard
+            Copy to Clipboard
           </button>
         </div>
       )}
