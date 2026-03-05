@@ -1,90 +1,97 @@
-.list-selector {
-  position: relative;
-}
-
-.selector-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  transition: all 0.2s;
-  max-width: 200px;
-}
-
-.selector-trigger:hover {
-  background: var(--hover-bg);
-}
-
-.current-list-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.arrow {
-  font-size: 0.7rem;
-  transition: transform 0.2s;
-  color: var(--text-secondary);
-}
-
-.arrow.open {
-  transform: rotate(180deg);
-}
-
-.dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
   left: 0;
-  min-width: 220px;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 100;
-  overflow: hidden;
-  animation: dropdownFadeIn 0.15s ease;
+  border-right: 1px solid var(--border-color);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
 }
 
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.sidebar.open {
+  transform: translateX(0);
 }
 
-.dropdown-item {
+.sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.sidebar-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.sidebar-close:hover {
+  background: var(--hover-bg);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.dropdown-item:hover {
+.sidebar-item:hover {
   background: var(--hover-bg);
 }
 
-.dropdown-item.active {
+.sidebar-item.active {
   background: var(--primary);
   color: white;
 }
 
-.dropdown-item.active .list-actions .action-btn {
+.sidebar-item.active .list-actions .action-btn {
+  color: white;
   opacity: 0.8;
 }
 
-.dropdown-item.active .list-actions .action-btn:hover {
+.sidebar-item.active .list-actions .action-btn:hover {
   opacity: 1;
 }
 
@@ -92,24 +99,29 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
 }
 
 .list-actions {
   display: flex;
   gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
 }
 
-.dropdown-item:hover .list-actions {
+.sidebar-item:hover .list-actions {
+  opacity: 1;
 }
 
 .action-btn {
   background: transparent;
   border: none;
-  padding: 4px;
+  padding: 4px 8px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 1rem;
   border-radius: 4px;
   transition: background 0.15s;
+  color: var(--text-secondary);
 }
 
 .action-btn:hover {
@@ -118,7 +130,7 @@
 
 .rename-input {
   flex: 1;
-  padding: 4px 8px;
+  padding: 6px 10px;
   font-size: 0.95rem;
   border: 1px solid var(--primary);
   border-radius: 4px;
@@ -127,17 +139,30 @@
   outline: none;
 }
 
-.dropdown-divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 4px 0;
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
 }
 
-.create-item {
-  color: var(--primary);
+.create-list-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.create-item:hover {
-  background: var(--hover-bg);
+.create-list-btn:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 600px) {
+  .list-actions {
+    opacity: 1;
+  }
 }

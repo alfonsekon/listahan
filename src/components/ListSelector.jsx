@@ -7,26 +7,15 @@ export function ListSelector({
   onSelectList, 
   onCreateList, 
   onDeleteList,
-  onRenameList 
+  onRenameList,
+  isOpen,
+  onToggle
 }) {
-  const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
-  const dropdownRef = useRef(null)
   const inputRef = useRef(null)
 
   const currentList = lists.find(l => l.id === currentListId)
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
-        setEditingId(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   useEffect(() => {
     if (editingId && inputRef.current) {
@@ -35,19 +24,19 @@ export function ListSelector({
     }
   }, [editingId])
 
-  const handleSelectClick = () => {
-    setIsOpen(!isOpen)
+  const handleOverlayClick = () => {
+    onToggle(false)
   }
 
   const handleListClick = (listId) => {
     onSelectList(listId)
-    setIsOpen(false)
+    onToggle(false)
     setEditingId(null)
   }
 
   const handleCreateList = () => {
     onCreateList()
-    setIsOpen(false)
+    onToggle(false)
   }
 
   const handleDeleteClick = (e, listId) => {
@@ -77,20 +66,20 @@ export function ListSelector({
   }
 
   return (
-    <div className="list-selector" ref={dropdownRef}>
-      <button className="selector-trigger" onClick={handleSelectClick}>
-        <span className="current-list-name">
-          {currentList ? currentList.name : 'Select List'}
-        </span>
-        <span className={`arrow ${isOpen ? 'open' : ''}`}>▼</span>
-      </button>
-
-      {isOpen && (
-        <div className="dropdown">
+    <>
+      {isOpen && <div className="sidebar-overlay" onClick={handleOverlayClick} />}
+      
+      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <h2>My Lists</h2>
+          <button className="sidebar-close" onClick={() => onToggle(false)}>×</button>
+        </div>
+        
+        <div className="sidebar-content">
           {lists.map((list) => (
             <div 
               key={list.id} 
-              className={`dropdown-item ${list.id === currentListId ? 'active' : ''}`}
+              className={`sidebar-item ${list.id === currentListId ? 'active' : ''}`}
               onClick={() => handleListClick(list.id)}
             >
               {editingId === list.id ? (
@@ -114,28 +103,28 @@ export function ListSelector({
                       onClick={(e) => handleRenameClick(e, list)}
                       title="Rename"
                     >
-                      ✏️
+                      ✎
                     </button>
                     <button 
                       className="action-btn delete-btn"
                       onClick={(e) => handleDeleteClick(e, list.id)}
                       title="Delete"
                     >
-                      🗑️
+                      ×
                     </button>
                   </div>
                 </>
               )}
             </div>
           ))}
-
-          <div className="dropdown-divider" />
-
-          <div className="dropdown-item create-item" onClick={handleCreateList}>
-            <span>+ New List</span>
-          </div>
         </div>
-      )}
-    </div>
+
+        <div className="sidebar-footer">
+          <button className="create-list-btn" onClick={handleCreateList}>
+            + New List
+          </button>
+        </div>
+      </div>
+    </>
   )
 }

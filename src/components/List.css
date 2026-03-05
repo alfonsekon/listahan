@@ -1,7 +1,7 @@
 .list-container {
   max-width: 500px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 60px 16px 24px;
   min-height: 100vh;
 }
 
@@ -9,14 +9,102 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   gap: 12px;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-left h1 {
+  position: fixed;
+  top: 17px;
+  left: 56px;
+  z-index: 50;
+}
+
+.header-right {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .header-right {
+    top: 60px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .list-container {
+    padding-top: 120px;
+  }
+
+  .read-only .header-right {
+    top: 60px;
+  }
+}
+
+.create-list-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.create-list-btn:hover {
+  background: var(--hover-bg);
+}
+
+.read-only-banner {
+  background: var(--hover-bg);
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  z-index: 50;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.sidebar-toggle:hover {
+  background: var(--hover-bg);
+}
+
 .header-center {
-  flex: 1;
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .header h1 {
@@ -98,6 +186,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .export-btn:hover,
