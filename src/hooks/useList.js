@@ -137,6 +137,11 @@ export function useList(listId, isReadOnly = false) {
         items: null,
         extraPayments: null,
       })
+    } else {
+      const data = snapshot.val()
+      if (!data.name && name) {
+        await update(ref(database, `lists/${targetListId}`), { name })
+      }
     }
     setIsInitialized(true)
   }, [isReadOnly])

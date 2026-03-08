@@ -262,7 +262,7 @@ export function List() {
           <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)} title="My Lists">
             ☰
           </button>
-          <h1>Pede Palista{listName ? ` - ${listName}` : ''}</h1>
+          <h1>Pede Palista</h1>
         </div>
         <div className="header-right">
           {!isReadOnly && (
@@ -609,7 +609,7 @@ export function SharedList() {
           <button className="sidebar-toggle" onClick={handleGoToMyLists} title="Go to My Lists">
             ☰
           </button>
-          <h1>Pede Palista{listName ? ` - ${listName}` : ''}</h1>
+          <h1>Pede Palista</h1>
         </div>
         <div className="header-right">
           <button className="share-btn" onClick={handleGoToMyLists}>
