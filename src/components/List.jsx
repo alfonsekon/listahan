@@ -256,13 +256,13 @@ export function List() {
   }
 
   return (
-    <div className="list-container">
+    <>
       <header className="header">
         <div className="header-left">
           <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)} title="My Lists">
             ☰
           </button>
-          <h1>Pede Palista</h1>
+          <h1>Pede Palista{listName ? ` - ${listName}` : ''}</h1>
         </div>
         <div className="header-right">
           {!isReadOnly && (
@@ -291,18 +291,19 @@ export function List() {
         </div>
       </header>
 
-      <div className="header-center">
-        <ListSelector
-          lists={lists}
-          currentListId={currentListId}
-          onSelectList={handleSelectList}
-          onCreateList={handleCreateListClick}
-          onDeleteList={handleDeleteClick}
-          onRenameList={handleRenameList}
-          isOpen={sidebarOpen}
-          onToggle={setSidebarOpen}
-        />
-      </div>
+      <div className="list-container">
+        <div className="list-selector-wrapper">
+          <ListSelector
+            lists={lists}
+            currentListId={currentListId}
+            onSelectList={handleSelectList}
+            onCreateList={handleCreateListClick}
+            onDeleteList={handleDeleteClick}
+            onRenameList={handleRenameList}
+            isOpen={sidebarOpen}
+            onToggle={setSidebarOpen}
+          />
+        </div>
 
       <form className="add-form" onSubmit={handleSubmit}>
         <input
@@ -481,6 +482,7 @@ export function List() {
         onRemove={removeToast}
       />
     </div>
+    </>
   )
 }
 
@@ -572,7 +574,7 @@ export function SharedList() {
 
   if (listExists === false) {
     return (
-      <div className="list-container">
+      <>
         <header className="header">
           <div className="header-left">
             <button className="sidebar-toggle" onClick={handleGoToMyLists} title="Go to My Lists">
@@ -586,29 +588,31 @@ export function SharedList() {
             </button>
           </div>
         </header>
-        
-        <div className="not-found">
-          <h2>List not found</h2>
-          <p>This list doesn't exist or has been deleted.</p>
-          <button className="go-to-lists-btn" onClick={handleGoToMyLists}>
-            Go to My Lists
-          </button>
+
+        <div className="list-container">
+          <div className="not-found">
+            <h2>List not found</h2>
+            <p>This list doesn't exist or has been deleted.</p>
+            <button className="go-to-lists-btn" onClick={handleGoToMyLists}>
+              Go to My Lists
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="list-container read-only">
+    <>
       <header className="header">
         <div className="header-left">
           <button className="sidebar-toggle" onClick={handleGoToMyLists} title="Go to My Lists">
             ☰
           </button>
-          <h1>Pede Palista</h1>
+          <h1>Pede Palista{listName ? ` - ${listName}` : ''}</h1>
         </div>
         <div className="header-right">
-          <button className="create-list-btn" onClick={handleGoToMyLists}>
+          <button className="share-btn" onClick={handleGoToMyLists}>
             + New List
           </button>
           <ExportMenu
@@ -626,13 +630,12 @@ export function SharedList() {
         </div>
       </header>
 
-      <div className="header-center">
+      <div className="list-container read-only">
         <div className="read-only-banner">
           Viewing "{listName}"
         </div>
-      </div>
 
-      <ul className="items-list">
+        <ul className="items-list">
         {items.length === 0 ? (
           <li className="empty-state">
             This list is empty.
@@ -734,5 +737,6 @@ export function SharedList() {
         onRemove={removeToast}
       />
     </div>
+    </>
   )
 }

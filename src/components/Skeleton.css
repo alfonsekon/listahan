@@ -102,31 +102,50 @@
   margin-top: 4px;
 }
 
-.skeleton-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.skeleton-title {
-  width: 100px;
-  height: 28px;
-}
-
-.skeleton-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.skeleton-action-btn {
+.skeleton-sidebar-toggle {
   width: 40px;
   height: 36px;
+}
+
+.skeleton-h1 {
+  width: 140px;
+  height: 28px;
 }
 
 .skeleton-requests-btn {
   width: 90px;
   height: 36px;
+}
+
+.skeleton-export-btn {
+  width: 70px;
+  height: 36px;
+}
+
+.skeleton-import-btn {
+  width: 70px;
+  height: 36px;
+}
+
+.skeleton-share-btn {
+  width: 60px;
+  height: 36px;
+}
+
+.skeleton-theme-btn {
+  width: 40px;
+  height: 36px;
+}
+
+.skeleton-create-list-btn {
+  width: 100px;
+  height: 36px;
+}
+
+.skeleton-banner-text {
+  height: 20px;
+  width: 200px;
+  margin: 0 auto;
 }
 
 .skeleton-selector {

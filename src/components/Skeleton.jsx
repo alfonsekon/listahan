@@ -3,23 +3,38 @@ import './Skeleton.css'
 export function SkeletonList({ isReadOnly = false }) {
   return (
     <div className="list-container">
+      <div className="header-background" />
       <header className="header">
-        <div className="skeleton skeleton-title"></div>
-        <div className="header-center">
-          <div className="skeleton skeleton-selector"></div>
+        <div className="header-left">
+          <div className="skeleton skeleton-sidebar-toggle"></div>
+          <div className="skeleton skeleton-h1"></div>
         </div>
-        <div className="header-actions">
-          <div className="skeleton skeleton-action-btn"></div>
-          <div className="skeleton skeleton-requests-btn"></div>
-          <div className="skeleton skeleton-action-btn"></div>
+        <div className="header-right">
+          {!isReadOnly && (
+            <>
+              <div className="skeleton skeleton-requests-btn"></div>
+              <div className="skeleton skeleton-export-btn"></div>
+              <div className="skeleton skeleton-import-btn"></div>
+            </>
+          )}
+          {isReadOnly && (
+            <div className="skeleton skeleton-create-list-btn"></div>
+          )}
+          <div className="skeleton skeleton-share-btn"></div>
+          <div className="skeleton skeleton-theme-btn"></div>
         </div>
       </header>
 
-      {isReadOnly && (
-        <div className="read-only-banner">
-          <div className="skeleton" style={{ width: 200, height: 20, margin: '0 auto' }}></div>
-        </div>
-      )}
+      <div className="header-center">
+        {!isReadOnly && (
+          <div className="skeleton skeleton-selector"></div>
+        )}
+        {isReadOnly && (
+          <div className="read-only-banner">
+            <div className="skeleton skeleton-banner-text"></div>
+          </div>
+        )}
+      </div>
 
       {!isReadOnly && (
         <div className="skeleton-form">
