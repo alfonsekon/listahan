@@ -117,10 +117,7 @@ export function ListSelector({
               )}
             </div>
           ))}
-        </div>
-
-        <div className="sidebar-footer">
-          <button className="create-list-btn" onClick={handleCreateList}>
+          <button className="create-list-btn create-list-inline" onClick={handleCreateList}>
             + New List
           </button>
         </div>

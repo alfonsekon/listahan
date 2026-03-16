@@ -286,7 +286,7 @@ export function List() {
             Share
           </button>
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? '☾' : '☀'}
           </button>
         </div>
       </header>
@@ -584,12 +584,12 @@ export function SharedList() {
           </div>
           <div className="header-right">
             <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? '☾' : '☀'}
             </button>
           </div>
         </header>
 
-        <div className="list-container">
+      <div className="list-container">
           <div className="not-found">
             <h2>List not found</h2>
             <p>This list doesn't exist or has been deleted.</p>
@@ -625,7 +625,7 @@ export function SharedList() {
             Share
           </button>
           <button className="theme-btn" onClick={toggleTheme} title="Toggle theme">
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? '☾' : '☀'}
           </button>
         </div>
       </header>
@@ -711,7 +711,7 @@ export function SharedList() {
       </div>
 
       {/* <button className="copy-list-btn" onClick={handleCopyList}>
-        {copied ? '✓ Copied!' : '📋 Copy to My List'}
+        {copied ? '✓ Copied!' : '✓ Copy to My List'}
       </button> */}
 
       <RequestModal

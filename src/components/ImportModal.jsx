@@ -138,7 +138,7 @@ export function ImportModal({ isOpen, onClose, onImport, existingItems = [] }) {
             onDragOver={handleDragOver}
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="drop-icon">📁</div>
+            <div className="drop-icon">⑂</div>
             <p>Drag and drop a JSON file here</p>
             <p className="drop-subtext">or click to select a file</p>
             <input
