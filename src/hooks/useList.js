@@ -36,6 +36,7 @@ export function useList(listId, isReadOnly = false) {
               id,
               ...item,
             }))
+            itemsArray.sort((a, b) => (a.order ?? a.createdAt ?? 0) - (b.order ?? b.createdAt ?? 0))
             setItems(itemsArray)
           } else {
             setItems([])
@@ -84,6 +85,7 @@ export function useList(listId, isReadOnly = false) {
   const addItem = useCallback(async (name, amount, assignedTo = []) => {
     if (isReadOnly) return
     const newItemsRef = ref(database, `lists/${listId}/items`)
+    const maxOrder = items.length > 0 ? Math.max(...items.map(i => i.order || 0)) : -1
     await push(newItemsRef, {
       name,
       amount: parseFloat(amount),
@@ -91,12 +93,27 @@ export function useList(listId, isReadOnly = false) {
       assignedTo: assignedTo.length > 0 ? assignedTo : null,
       payments: null,
       createdAt: Date.now(),
+      order: maxOrder + 1,
     })
-  }, [isReadOnly, listId])
+  }, [isReadOnly, listId, items])
 
   const removeItem = useCallback(async (itemId) => {
     if (isReadOnly) return
     await remove(ref(database, `lists/${listId}/items/${itemId}`))
+  }, [isReadOnly, listId])
+
+  const reorderItems = useCallback(async (itemIds) => {
+    if (isReadOnly) return
+    const updates = {}
+    itemIds.forEach((id, index) => {
+      updates[`${id}/order`] = index
+    })
+    const itemsRef = ref(database, `lists/${listId}/items`)
+    for (const id of itemIds) {
+      await update(ref(database, `lists/${listId}/items/${id}`), {
+        order: itemIds.indexOf(id),
+      })
+    }
   }, [isReadOnly, listId])
 
   const togglePaid = useCallback(async (itemId, currentStatus) => {
@@ -428,6 +445,7 @@ export function useList(listId, isReadOnly = false) {
     removeItemPayment,
     togglePaymentStatus,
     copyList,
+    reorderItems,
   }
 }
 

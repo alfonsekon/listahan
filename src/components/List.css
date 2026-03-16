@@ -347,6 +347,45 @@
   opacity: 0.9;
 }
 
+.rearrange-controls {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.rearrange-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rearrange-btn:hover:not(:disabled) {
+  background: var(--hover-bg);
+}
+
+.rearrange-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rearrange-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.items-list.rearrange-mode .list-item-container {
+  cursor: grab;
+}
+
+.items-list.rearrange-mode .list-item-container:active {
+  cursor: grabbing;
+}
+
 .member-select-wrapper {
   position: relative;
   flex-shrink: 0;

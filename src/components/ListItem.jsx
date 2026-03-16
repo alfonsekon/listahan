@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './ListItem.css'
 
-export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggle, onRemove, onUpdateName, onUpdateAmount, onAssignMembers, onUpdatePaymentStatus, onRequest, isReadOnly }) {
+export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggle, onRemove, onUpdateName, onUpdateAmount, onAssignMembers, onUpdatePaymentStatus, onRequest, isReadOnly, rearrangeMode, onDragStart, onDragOver, onDrop, onDragEnd, isDragging }) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [isEditingAmount, setIsEditingAmount] = useState(false)
   const [editName, setEditName] = useState(item.name)
@@ -136,8 +136,26 @@ export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggl
   const isPaid = isGroupMode ? isItemFullyPaid : item.isPaid
 
   return (
-    <div className="list-item-container">
+    <div 
+      className={`list-item-container ${isDragging ? 'dragging' : ''}`}
+      draggable={rearrangeMode}
+      onDragStart={(e) => rearrangeMode && onDragStart && onDragStart(e, item.id)}
+      onDragOver={rearrangeMode ? onDragOver : undefined}
+      onDrop={(e) => rearrangeMode && onDrop && onDrop(e, item.id)}
+      onDragEnd={rearrangeMode ? onDragEnd : undefined}
+    >
       <li className={`list-item ${isPaid ? 'paid' : ''}`}>
+        {rearrangeMode ? (
+          <>
+            <span className="drag-handle" title="Drag to reorder">⋮⋮</span>
+            <span className="item-name">{item.name}</span>
+            <div className="item-members">
+              {isGroupMode && renderMemberCards()}
+            </div>
+            <span className="item-amount">₱{item.amount.toLocaleString()}</span>
+          </>
+        ) : (
+          <>
         {!showCheckbox && (
           <label className="checkbox-wrapper">
             <input
@@ -163,7 +181,7 @@ export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggl
           />
         ) : (
           <span 
-            className="item-name editable" 
+            className="item-name editable"
             onClick={() => !isReadOnly && setIsEditingName(true)}
             title={isReadOnly ? 'View only' : 'Click to edit'}
           >
@@ -190,7 +208,7 @@ export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggl
           />
         ) : (
           <span 
-            className="item-amount editable" 
+            className="item-amount editable"
             onClick={() => !isReadOnly && setIsEditingAmount(true)}
             title={isReadOnly ? 'View only' : 'Click to edit'}
           >
@@ -221,9 +239,11 @@ export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggl
             </svg>
           </button>
         )}
+          </>
+        )}
       </li>
 
-      {isGroupMode && !isReadOnly && members.length > 0 && (
+      {isGroupMode && !isReadOnly && !rearrangeMode && members.length > 0 && (
         <div className="item-actions">
           <div className="action-btn-wrapper" ref={memberEditRef}>
             {showMemberEdit ? (

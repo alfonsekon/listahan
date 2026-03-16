@@ -45,6 +45,7 @@ export function List() {
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [toasts, setToasts] = useState([])
+  const [rearrangeMode, setRearrangeMode] = useState(false)
 
   const showToast = (message, type = 'success') => {
     const id = Date.now()
@@ -114,6 +115,7 @@ export function List() {
     addItemPayment,
     removeItemPayment,
     togglePaymentStatus,
+    reorderItems,
   } = useList(currentListId, isReadOnly)
 
   useEffect(() => {
@@ -132,7 +134,50 @@ export function List() {
   const [removeMemberModalOpen, setRemoveMemberModalOpen] = useState(false)
   const [selectedMembers, setSelectedMembers] = useState([])
   const [showMemberDropdown, setShowMemberDropdown] = useState(false)
+  const [draggedItemId, setDraggedItemId] = useState(null)
   const memberSelectRef = useRef(null)
+
+  const handleDragStart = (e, itemId) => {
+    if (!rearrangeMode) return
+    setDraggedItemId(itemId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e) => {
+    if (!rearrangeMode) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleDrop = (e, targetItemId) => {
+    if (!rearrangeMode) return
+    e.preventDefault()
+    if (!draggedItemId || draggedItemId === targetItemId) {
+      setDraggedItemId(null)
+      return
+    }
+    const currentItems = [...items]
+    const draggedIndex = currentItems.findIndex(i => i.id === draggedItemId)
+    const targetIndex = currentItems.findIndex(i => i.id === targetItemId)
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedItemId(null)
+      return
+    }
+    const [draggedItem] = currentItems.splice(draggedIndex, 1)
+    currentItems.splice(targetIndex, 0, draggedItem)
+    const newOrder = currentItems.map(item => item.id)
+    reorderItems(newOrder)
+    setDraggedItemId(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedItemId(null)
+  }
+
+  const toggleRearrangeMode = () => {
+    setRearrangeMode(prev => !prev)
+    setDraggedItemId(null)
+  }
 
   const currentList = useMemo(() => 
     lists.find(l => l.id === currentListId), 
@@ -436,7 +481,25 @@ export function List() {
         </button>
       </form>
 
-      <ul className="items-list">
+      {!isReadOnly && (
+        <div className="rearrange-controls">
+          {rearrangeMode ? (
+            <button className="rearrange-btn active" onClick={toggleRearrangeMode}>
+              Done Rearranging
+            </button>
+          ) : (
+            <button 
+              className="rearrange-btn" 
+              onClick={toggleRearrangeMode}
+              disabled={items.length < 2}
+            >
+              Rearrange Items
+            </button>
+          )}
+        </div>
+      )}
+
+      <ul className={`items-list ${rearrangeMode ? 'rearrange-mode' : ''}`}>
         {items.length === 0 ? (
           <li className="empty-state">
             No items yet.
@@ -457,6 +520,12 @@ export function List() {
               onUpdatePaymentStatus={togglePaymentStatus}
               onRequest={isReadOnly ? handleRequestClick : undefined}
               isReadOnly={isReadOnly}
+              rearrangeMode={rearrangeMode}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragEnd={handleDragEnd}
+              isDragging={draggedItemId === item.id}
             />
           ))
         )}
@@ -794,7 +863,7 @@ export function SharedList() {
 
       <div className="list-container read-only">
         <div className="read-only-banner">
-          Viewing "{listName}"
+          {isGroupMode ? `Viewing Group List "${listName}"` : `Viewing "${listName}"`}
         </div>
 
         <ul className="items-list">
