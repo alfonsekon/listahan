@@ -21,7 +21,7 @@ function formatDate(dateStr) {
   return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
 }
 
-export function RequestsPanel({ isOpen, onClose, requests, onAccept, onReject, items }) {
+export function RequestsPanel({ isOpen, onClose, requests, onAccept, onReject, onDelete, onClearResolved, items }) {
   const panelRef = useRef(null)
 
   useEffect(() => {
@@ -116,9 +116,17 @@ export function RequestsPanel({ isOpen, onClose, requests, onAccept, onReject, i
 
               {resolvedRequests.length > 0 && (
                 <div className="requests-section">
-                  <h3>Resolved</h3>
+                  <h3>
+                    Resolved
+                    <button className="clear-resolved-btn" onClick={onClearResolved} title="Clear all resolved requests">
+                      × Clear
+                    </button>
+                  </h3>
                   {resolvedRequests.map((request) => (
                     <div key={request.id} className={`request-card ${request.status}`}>
+                      <button className="delete-request-btn" onClick={() => onDelete(request.id)} title="Delete request">
+                        ×
+                      </button>
                       <div className="request-type">
                         {request.type === 'markPaid' ? (
                           <span className="badge mark-paid">Mark as Paid</span>

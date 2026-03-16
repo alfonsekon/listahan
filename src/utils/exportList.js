@@ -14,6 +14,7 @@ export function getJsonString(listName, items, extraPayments) {
         name: ep.name,
         amount: ep.amount,
         date: ep.date,
+        note: ep.note,
         createdAt: ep.createdAt,
       })),
     },

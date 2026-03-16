@@ -113,7 +113,7 @@ export function List() {
   }, [listId, listName])
 
   const { theme, toggleTheme } = useTheme()
-  const { requests, pendingCount, createRequest, acceptRequest, rejectRequest } = useRequests(currentListId)
+  const { requests, pendingCount, createRequest, acceptRequest, rejectRequest, deleteRequest, clearResolvedRequests } = useRequests(currentListId)
   const [showPaidBreakdown, setShowPaidBreakdown] = useState(false)
   const [extraPaymentModalOpen, setExtraPaymentModalOpen] = useState(false)
 
@@ -137,8 +137,8 @@ export function List() {
     }
   }
 
-  const handleAddExtraPayment = (amount, date) => {
-    addExtraPayment(amount, date)
+  const handleAddExtraPayment = (amount, date, note) => {
+    addExtraPayment(amount, date, note)
   }
 
   const handleShare = () => {
@@ -371,7 +371,7 @@ export function List() {
             {extraPayments.map((ep) => (
               <li key={ep.id} className="extra-payment-item">
                 <span className="ep-name">
-                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}
+                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}{ep.note ? ` - ${ep.note}` : ''}
                 </span>
                 <span className="ep-amount">₱{ep.amount.toLocaleString()}</span>
                 <button 
@@ -467,6 +467,8 @@ export function List() {
         requests={requests}
         onAccept={handleAcceptRequest}
         onReject={handleRejectRequest}
+        onDelete={deleteRequest}
+        onClearResolved={clearResolvedRequests}
         items={items}
       />
 
@@ -669,7 +671,7 @@ export function SharedList() {
             {extraPayments.map((ep) => (
               <li key={ep.id} className="extra-payment-item">
                 <span className="ep-name">
-                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}
+                  {ep.name}{ep.date ? ` - ${formatPaymentDate(ep.date)}` : ''}{ep.note ? ` - ${ep.note}` : ''}
                 </span>
                 <span className="ep-amount">₱{ep.amount.toLocaleString()}</span>
               </li>

@@ -5,6 +5,7 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
   const [amount, setAmount] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [date, setDate] = useState('')
+  const [note, setNote] = useState('')
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -12,6 +13,7 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
       setAmount('')
       setShowDatePicker(false)
       setDate('')
+      setNote('')
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }, [isOpen])
@@ -20,7 +22,7 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
     e.preventDefault()
     const value = parseFloat(amount)
     if (value > 0) {
-      onCreate(value, date || null)
+      onCreate(value, date || null, note.trim() || null)
       setAmount('')
       onClose()
     }
@@ -32,14 +34,14 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
     }
   }
 
-  const handleAddDate = () => {
-    setShowDatePicker(true)
-    setDate(new Date().toISOString().split('T')[0])
-  }
-
-  const handleRemoveDate = () => {
-    setShowDatePicker(false)
-    setDate('')
+  const handleToggleDate = () => {
+    if (showDatePicker) {
+      setShowDatePicker(false)
+      setDate('')
+    } else {
+      setShowDatePicker(true)
+      setDate(new Date().toISOString().split('T')[0])
+    }
   }
 
   if (!isOpen) return null
@@ -67,11 +69,7 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
             />
           </div>
           
-          {!showDatePicker ? (
-            <button type="button" className="add-date-btn" onClick={handleAddDate}>
-              + Add Date
-            </button>
-          ) : (
+          {showDatePicker && (
             <div className="date-picker-wrapper">
               <input
                 id="extra-date"
@@ -81,11 +79,24 @@ export function ExtraPaymentModal({ isOpen, onClose, onCreate }) {
                 onKeyDown={handleKeyDown}
                 className="date-input"
               />
-              <button type="button" className="remove-date-btn" onClick={handleRemoveDate}>
-                ×
-              </button>
             </div>
           )}
+          
+          <button type="button" className="add-date-btn" onClick={handleToggleDate}>
+            {showDatePicker ? '− Remove Date' : '+ Add Date'}
+          </button>
+          
+          <label htmlFor="extra-note">Note (optional)</label>
+          <input
+            id="extra-note"
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Add a note..."
+            className="note-input"
+            autocomplete="off"
+          />
           
           <div className="modal-actions">
             <button type="button" className="cancel-btn" onClick={onClose}>

@@ -38,6 +38,7 @@ export function parseImportedJson(jsonString) {
         name: ep.name,
         amount: ep.amount,
         date: ep.date || null,
+        note: ep.note || null,
         createdAt: ep.createdAt || Date.now(),
       })
     }

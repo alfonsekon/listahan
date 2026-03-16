@@ -60,7 +60,7 @@ export function useRequests(listId) {
     })
   }, [listId])
 
-  const rejectRequest = useCallback(async (request) => {
+const rejectRequest = useCallback(async (request) => {
     if (request.status !== 'pending') return
 
     await update(ref(database, `requests/${listId}/${request.id}`), {
@@ -68,14 +68,27 @@ export function useRequests(listId) {
     })
   }, [listId])
 
+  const deleteRequest = useCallback(async (requestId) => {
+    await remove(ref(database, `requests/${listId}/${requestId}`))
+  }, [listId])
+
+  const clearResolvedRequests = useCallback(async () => {
+    const resolved = requests.filter((r) => r.status !== 'pending')
+    await Promise.all(
+      resolved.map((r) => remove(ref(database, `requests/${listId}/${r.id}`)))
+    )
+  }, [listId, requests])
+
   const pendingCount = requests.filter((r) => r.status === 'pending').length
 
-  return {
+return {
     requests,
     loading,
     pendingCount,
     createRequest,
     acceptRequest,
     rejectRequest,
+    deleteRequest,
+    clearResolvedRequests,
   }
 }

@@ -146,13 +146,14 @@ export function useList(listId, isReadOnly = false) {
     setIsInitialized(true)
   }, [isReadOnly])
 
-  const addExtraPayment = useCallback(async (amount, date) => {
+  const addExtraPayment = useCallback(async (amount, date, note) => {
     if (isReadOnly) return
     const newEpRef = ref(database, `lists/${listId}/extraPayments`)
     await push(newEpRef, {
       name: 'Payment',
       amount: parseFloat(amount),
       date: date || null,
+      note: note || null,
       createdAt: Date.now(),
     })
   }, [isReadOnly, listId])
