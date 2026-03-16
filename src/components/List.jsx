@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useList, generateListId } from '../hooks/useList'
 import { useLists } from '../hooks/useLists'
@@ -15,6 +15,8 @@ import { ExtraPaymentModal } from './ExtraPaymentModal'
 import { RequestModal } from './RequestModal'
 import { RequestsPanel } from './RequestsPanel'
 import { ImportModal } from './ImportModal'
+import { StartGroupModal } from './StartGroupModal'
+import { RemoveMemberModal } from './RemoveMemberModal'
 import { Toast } from './Toast'
 import { SkeletonList } from './Skeleton'
 import './List.css'
@@ -102,6 +104,16 @@ export function List() {
     removeExtraPayment,
     totals,
     listName,
+    isGroupMode,
+    wasInGroupMode,
+    members,
+    addMember,
+    removeMember,
+    toggleGroupMode,
+    assignMembersToItem,
+    addItemPayment,
+    removeItemPayment,
+    togglePaymentStatus,
   } = useList(currentListId, isReadOnly)
 
   useEffect(() => {
@@ -116,6 +128,11 @@ export function List() {
   const { requests, pendingCount, createRequest, acceptRequest, rejectRequest, deleteRequest, clearResolvedRequests } = useRequests(currentListId)
   const [showPaidBreakdown, setShowPaidBreakdown] = useState(false)
   const [extraPaymentModalOpen, setExtraPaymentModalOpen] = useState(false)
+  const [startGroupModalOpen, setStartGroupModalOpen] = useState(false)
+  const [removeMemberModalOpen, setRemoveMemberModalOpen] = useState(false)
+  const [selectedMembers, setSelectedMembers] = useState([])
+  const [showMemberDropdown, setShowMemberDropdown] = useState(false)
+  const memberSelectRef = useRef(null)
 
   const currentList = useMemo(() => 
     lists.find(l => l.id === currentListId), 
@@ -131,14 +148,44 @@ export function List() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (name.trim() && amount && !isNaN(parseFloat(amount))) {
-      addItem(name.trim(), parseFloat(amount))
+      addItem(name.trim(), parseFloat(amount), selectedMembers)
       setName('')
       setAmount('')
+      setSelectedMembers([])
     }
   }
 
   const handleAddExtraPayment = (amount, date, note) => {
     addExtraPayment(amount, date, note)
+  }
+
+  const handleStartGroup = async (namesString) => {
+    const names = namesString.split(/[\n,]+/).map(n => n.trim()).filter(n => n)
+    for (const name of names) {
+      await addMember(name)
+    }
+    await toggleGroupMode(true)
+    setStartGroupModalOpen(false)
+  }
+
+  const toggleMemberSelection = (memberId) => {
+    setSelectedMembers(prev => 
+      prev.includes(memberId)
+        ? prev.filter(id => id !== memberId)
+        : [...prev, memberId]
+    )
+  }
+
+  const handleSelectAllMembers = () => {
+    if (selectedMembers.length === members.length) {
+      setSelectedMembers([])
+    } else {
+      setSelectedMembers(members.map(m => m.id))
+    }
+  }
+
+  const handleRemoveMember = async (memberId) => {
+    await removeMember(memberId)
   }
 
   const handleShare = () => {
@@ -223,6 +270,16 @@ export function List() {
 
   const handleAcceptRequest = async (request) => {
     try {
+      if (request.memberId) {
+        if (request.type === 'markPaid' && request.itemId) {
+          const item = items.find(i => i.id === request.itemId)
+          if (item) {
+            await addItemPayment(request.itemId, request.memberId, item.amount, null, request.message)
+          }
+        } else if (request.type === 'addPayment') {
+          await addExtraPayment(request.amount, request.date, request.message)
+        }
+      }
       await acceptRequest(request)
       showToast('Request accepted', 'success')
     } catch (error) {
@@ -267,6 +324,21 @@ export function List() {
         <div className="header-right">
           {!isReadOnly && (
             <>
+              {!isGroupMode && members.length === 0 && (
+                <button className="start-group-btn" onClick={() => setStartGroupModalOpen(true)}>
+                  Start Group
+                </button>
+              )}
+              {isGroupMode && (
+                <>
+                  <button className="add-member-btn" onClick={() => setStartGroupModalOpen(true)}>
+                    + Member
+                  </button>
+                  <button className="remove-member-btn" onClick={() => setRemoveMemberModalOpen(true)}>
+                    - Member
+                  </button>
+                </>
+              )}
               <button className="requests-btn" onClick={() => setRequestsPanelOpen(true)} title="View requests">
                 Requests
                 {pendingCount > 0 && <span className="requests-badge">{pendingCount}</span>}
@@ -322,6 +394,43 @@ export function List() {
           className="amount-input"
           autocomplete="off"
         />
+        {isGroupMode && members.length > 0 && (
+          <div className="member-select-wrapper" ref={memberSelectRef}>
+            <button 
+              type="button" 
+              className={`member-select-btn ${selectedMembers.length > 0 ? 'has-selection' : ''}`}
+              onClick={() => setShowMemberDropdown(!showMemberDropdown)}
+            >
+              {selectedMembers.length > 0 ? `${selectedMembers.length} selected` : 'Assign'}
+            </button>
+            {showMemberDropdown && (
+              <div className="member-dropdown">
+                <label className="member-option select-all">
+                  <input
+                    type="checkbox"
+                    checked={selectedMembers.length === members.length && members.length > 0}
+                    onChange={handleSelectAllMembers}
+                  />
+                  <span className={`member-card-select ${selectedMembers.length === members.length ? 'selected' : ''}`}>
+                    Select All
+                  </span>
+                </label>
+                {members.map(member => (
+                  <label key={member.id} className="member-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedMembers.includes(member.id)}
+                      onChange={() => toggleMemberSelection(member.id)}
+                    />
+                    <span className={`member-card-select ${selectedMembers.includes(member.id) ? 'selected' : ''}`}>
+                      {member.name}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <button type="submit" className="add-btn" disabled={!name.trim() || !amount || !isInitialized}>
           Add
         </button>
@@ -337,10 +446,15 @@ export function List() {
             <ListItem
               key={item.id}
               item={item}
+              members={members}
+              isGroupMode={isGroupMode}
               onToggle={togglePaid}
               onRemove={removeItem}
               onUpdateName={updateItemName}
               onUpdateAmount={updateItemAmount}
+              onAssignMembers={assignMembersToItem}
+              onRemovePayment={removeItemPayment}
+              onUpdatePaymentStatus={togglePaymentStatus}
               onRequest={isReadOnly ? handleRequestClick : undefined}
               isReadOnly={isReadOnly}
             />
@@ -453,6 +567,21 @@ export function List() {
         onCreate={handleAddExtraPayment}
       />
 
+      <StartGroupModal
+        isOpen={startGroupModalOpen}
+        onClose={() => setStartGroupModalOpen(false)}
+        onStart={handleStartGroup}
+        existingMembers={members}
+        isAddingMembers={isGroupMode}
+      />
+
+      <RemoveMemberModal
+        isOpen={removeMemberModalOpen}
+        onClose={() => setRemoveMemberModalOpen(false)}
+        members={members}
+        onRemove={handleRemoveMember}
+      />
+
       <RequestModal
         isOpen={requestModalOpen}
         onClose={() => setRequestModalOpen(false)}
@@ -499,6 +628,7 @@ export function SharedList() {
   const [selectedItemId, setSelectedItemId] = useState(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [toasts, setToasts] = useState([])
+  const [selectedMemberId, setSelectedMemberId] = useState(null)
 
   const showToast = (message, type = 'success') => {
     const id = Date.now()
@@ -520,7 +650,25 @@ export function SharedList() {
     listName,
     copyList,
     totals,
+    members,
+    isGroupMode,
   } = useList(listId, isReadOnly)
+
+  useEffect(() => {
+    const savedMemberId = localStorage.getItem(`sharedListMember_${listId}`)
+    if (savedMemberId && members.some(m => m.id === savedMemberId)) {
+      setSelectedMemberId(savedMemberId)
+    }
+  }, [listId, members])
+
+  const handleMemberChange = (memberId) => {
+    setSelectedMemberId(memberId)
+    if (memberId) {
+      localStorage.setItem(`sharedListMember_${listId}`, memberId)
+    } else {
+      localStorage.removeItem(`sharedListMember_${listId}`)
+    }
+  }
 
   const { createRequest } = useRequests(listId)
 
@@ -614,6 +762,18 @@ export function SharedList() {
           <h1>Pede Palista</h1>
         </div>
         <div className="header-right">
+          {isGroupMode && members.length > 0 && (
+            <select 
+              className="member-select"
+              value={selectedMemberId || ''}
+              onChange={(e) => handleMemberChange(e.target.value || null)}
+            >
+              <option value="">Who are you?</option>
+              {members.map(member => (
+                <option key={member.id} value={member.id}>{member.name}</option>
+              ))}
+            </select>
+          )}
           <button className="share-btn" onClick={handleGoToMyLists}>
             + New List
           </button>
@@ -647,10 +807,15 @@ export function SharedList() {
             <ListItem
               key={item.id}
               item={item}
+              members={members}
+              isGroupMode={isGroupMode}
+              selectedMemberId={selectedMemberId}
               onToggle={() => {}}
               onRemove={() => {}}
               onUpdateName={() => {}}
               onUpdateAmount={() => {}}
+              onAssignMembers={() => {}}
+              onRemovePayment={() => {}}
               onRequest={handleRequestClick}
               isReadOnly={isReadOnly}
             />
@@ -659,12 +824,14 @@ export function SharedList() {
       </ul>
 
       <div className="extra-payments-section">
-        <button 
-          className="add-extra-payment-btn"
-          onClick={handleRequestPaymentClick}
-        >
-          + Add Payment Made
-        </button>
+        {(!isGroupMode || selectedMemberId) && (
+          <button 
+            className="add-extra-payment-btn"
+            onClick={handleRequestPaymentClick}
+          >
+            + Add Payment Made
+          </button>
+        )}
         
         {extraPayments.length > 0 && (
           <ul className="extra-payments-list">
@@ -723,6 +890,9 @@ export function SharedList() {
         initialType={requestType}
         initialItemId={selectedItemId}
         defaultType={requestType}
+        members={members}
+        isGroupMode={isGroupMode}
+        selectedMemberId={selectedMemberId}
       />
 
       <ShareModal

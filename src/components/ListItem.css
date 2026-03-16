@@ -1,3 +1,10 @@
+.list-item-container {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
 .list-item {
   display: flex;
   align-items: center;
@@ -6,6 +13,9 @@
   background: var(--card-bg);
   border-radius: 8px;
   transition: background 0.2s, opacity 0.2s;
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .list-item.paid {
@@ -74,6 +84,21 @@
   margin: -4px -8px;
   border-radius: 4px;
   transition: background 0.15s;
+  min-width: 0;
+}
+
+.item-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.unassigned-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 .item-name.editable:hover {
@@ -171,4 +196,216 @@
 .request-btn svg {
   width: 16px;
   height: 16px;
+}
+
+.edit-members-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: 4px;
+  opacity: 0.6;
+}
+
+.edit-members-btn:hover {
+  background: var(--hover-bg);
+  opacity: 1;
+}
+
+.member-option.clickable {
+  cursor: pointer;
+}
+
+.member-option.clickable:hover {
+  background: var(--hover-bg);
+}
+
+.member-edit-dropdown {
+  position: absolute;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 150px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.member-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.member-edit-actions button {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.member-edit-actions button:first-child {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.member-edit-actions button:last-child {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.item-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.action-btn-wrapper {
+  position: relative;
+}
+
+.item-actions .edit-members-btn,
+.item-actions .edit-payments-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.item-actions .edit-members-btn:hover,
+.item-actions .edit-payments-btn:hover {
+  background: var(--hover-bg);
+}
+
+.item-actions .request-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.item-actions .request-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.payment-actions-dropdown {
+  position: relative;
+}
+
+.payment-actions-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.payment-actions-btn:hover {
+  background: var(--hover-bg);
+}
+
+.payment-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 180px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.payment-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.payment-action-item:hover {
+  background: var(--hover-bg);
+}
+
+.payment-action-item span {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.remove-payment-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.remove-payment-btn:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.payment-edit-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 150px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

@@ -1,0 +1,124 @@
+.start-group-modal {
+  max-width: 360px;
+}
+
+.start-group-modal h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.start-group-modal .modal-description {
+  margin: 0 0 20px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.start-group-modal label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.start-group-modal .names-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.start-group-modal .names-input:focus {
+  border-color: var(--primary);
+}
+
+.start-group-modal .names-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.start-group-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.start-group-modal .cancel-btn,
+.start-group-modal .create-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.start-group-modal .cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.start-group-modal .cancel-btn:hover {
+  background: var(--hover-bg);
+}
+
+.start-group-modal .create-btn {
+  background: var(--primary);
+  border: none;
+  color: white;
+}
+
+.start-group-modal .create-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.start-group-modal .create-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.start-group-modal .error-message {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin: 8px 0 0 0;
+}
+
+.start-group-modal .member-list {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.start-group-modal .remove-btn {
+  background: var(--danger);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.start-group-modal .remove-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.start-group-modal .remove-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
 import './RequestModal.css'
 
-export function RequestModal({ isOpen, onClose, onSubmit, initialType, initialItemId, defaultType }) {
+export function RequestModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  initialType, 
+  initialItemId, 
+  defaultType,
+  members = [],
+  isGroupMode = false,
+  selectedMemberId = null
+}) {
   const [type, setType] = useState(initialType || defaultType || 'markPaid')
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0])
@@ -28,6 +38,7 @@ export function RequestModal({ isOpen, onClose, onSubmit, initialType, initialIt
       amount: type === 'addPayment' ? parseFloat(amount) : null,
       date: type === 'addPayment' ? date : null,
       message: message.trim() || null,
+      memberId: selectedMemberId,
     }
 
     if (type === 'addPayment' && (!amount || parseFloat(amount) <= 0)) {
@@ -46,10 +57,22 @@ export function RequestModal({ isOpen, onClose, onSubmit, initialType, initialIt
 
   if (!isOpen) return null
 
+  const selectedMember = members.find(m => m.id === selectedMemberId)
+
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal-content request-modal">
         <h2>Send Request</h2>
+
+        {isGroupMode && (
+          <div className="request-member-info">
+            {selectedMember ? (
+              <span>You are: <strong>{selectedMember.name}</strong></span>
+            ) : (
+              <span className="no-member-selected">Please select who you are from the header</span>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {showTypeSelector ? (

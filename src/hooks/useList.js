@@ -5,6 +5,9 @@ import { database } from '../firebase'
 export function useList(listId, isReadOnly = false) {
   const [items, setItems] = useState([])
   const [extraPayments, setExtraPayments] = useState([])
+  const [members, setMembers] = useState([])
+  const [isGroupMode, setIsGroupMode] = useState(false)
+  const [wasInGroupMode, setWasInGroupMode] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [listExists, setListExists] = useState(null)
@@ -14,6 +17,7 @@ export function useList(listId, isReadOnly = false) {
   const listRef = ref(database, `lists/${listId}`)
   const itemsRef = ref(database, `lists/${listId}/items`)
   const extraPaymentsRef = ref(database, `lists/${listId}/extraPayments`)
+  const membersRef = ref(database, `lists/${listId}/members`)
 
   useEffect(() => {
     if (!listId) return
@@ -24,6 +28,8 @@ export function useList(listId, isReadOnly = false) {
         const data = snapshot.val()
         if (data) {
           setListName(data.name)
+          setIsGroupMode(data.isGroupMode || false)
+          setWasInGroupMode(data.wasInGroupMode || false)
           
           if (data.items) {
             const itemsArray = Object.entries(data.items).map(([id, item]) => ({
@@ -44,14 +50,26 @@ export function useList(listId, isReadOnly = false) {
           } else {
             setExtraPayments([])
           }
+
+          if (data.members) {
+            const membersArray = Object.entries(data.members).map(([id, member]) => ({
+              id,
+              ...member,
+            }))
+            setMembers(membersArray)
+          } else {
+            setMembers([])
+          }
         } else {
           setItems([])
           setExtraPayments([])
+          setMembers([])
         }
       } else {
         setListExists(false)
         setItems([])
         setExtraPayments([])
+        setMembers([])
       }
       setLoading(false)
       setIsInitialized(true)
@@ -63,13 +81,15 @@ export function useList(listId, isReadOnly = false) {
     return () => unsubscribe()
   }, [listId])
 
-  const addItem = useCallback(async (name, amount) => {
+  const addItem = useCallback(async (name, amount, assignedTo = []) => {
     if (isReadOnly) return
     const newItemsRef = ref(database, `lists/${listId}/items`)
     await push(newItemsRef, {
       name,
       amount: parseFloat(amount),
       isPaid: false,
+      assignedTo: assignedTo.length > 0 ? assignedTo : null,
+      payments: null,
       createdAt: Date.now(),
     })
   }, [isReadOnly, listId])
@@ -163,6 +183,127 @@ export function useList(listId, isReadOnly = false) {
     await remove(ref(database, `lists/${listId}/extraPayments/${epId}`))
   }, [isReadOnly, listId])
 
+  const addMember = useCallback(async (name) => {
+    if (isReadOnly) return
+    const newMemberRef = ref(database, `lists/${listId}/members`)
+    await push(newMemberRef, {
+      name,
+      createdAt: Date.now(),
+    })
+  }, [isReadOnly, listId])
+
+  const removeMember = useCallback(async (memberId) => {
+    if (isReadOnly) return
+    await remove(ref(database, `lists/${listId}/members/${memberId}`))
+    
+    const itemsSnapshot = await get(ref(database, `lists/${listId}/items`))
+    if (itemsSnapshot.exists()) {
+      const items = itemsSnapshot.val()
+      for (const [itemId, item] of Object.entries(items)) {
+        if (item.assignedTo && item.assignedTo.includes(memberId)) {
+          const newAssignedTo = item.assignedTo.filter(id => id !== memberId)
+          await update(ref(database, `lists/${listId}/items/${itemId}`), {
+            assignedTo: newAssignedTo.length > 0 ? newAssignedTo : null,
+          })
+        }
+        if (item.payments) {
+          const payments = item.payments.filter(p => p.memberId !== memberId)
+          await update(ref(database, `lists/${listId}/items/${itemId}`), {
+            payments: payments.length > 0 ? payments : null,
+          })
+        }
+      }
+    }
+  }, [isReadOnly, listId])
+
+  const toggleGroupMode = useCallback(async (enable) => {
+    if (isReadOnly) return
+    if (!enable && members.length === 0) {
+      await update(ref(database, `lists/${listId}`), {
+        isGroupMode: false,
+      })
+    } else {
+      await update(ref(database, `lists/${listId}`), {
+        isGroupMode: enable,
+        wasInGroupMode: true,
+      })
+    }
+  }, [isReadOnly, listId, members.length])
+
+  const assignMembersToItem = useCallback(async (itemId, memberIds) => {
+    if (isReadOnly) return
+    await update(ref(database, `lists/${listId}/items/${itemId}`), {
+      assignedTo: memberIds.length > 0 ? memberIds : null,
+    })
+  }, [isReadOnly, listId])
+
+  const addItemPayment = useCallback(async (itemId, memberId, amount, date, note) => {
+    if (isReadOnly) return
+    const itemRef = ref(database, `lists/${listId}/items/${itemId}`)
+    const snapshot = await get(itemRef)
+    if (!snapshot.exists()) return
+    
+    const item = snapshot.val()
+    const existingPayments = item.payments || []
+    
+    await update(itemRef, {
+      payments: [
+        ...existingPayments,
+        {
+          memberId,
+          amount: parseFloat(amount),
+          date: date || null,
+          note: note || null,
+          createdAt: Date.now(),
+        }
+      ]
+    })
+  }, [isReadOnly, listId])
+
+  const removeItemPayment = useCallback(async (itemId, paymentIndex) => {
+    if (isReadOnly) return
+    const itemRef = ref(database, `lists/${listId}/items/${itemId}`)
+    const snapshot = await get(itemRef)
+    if (!snapshot.exists()) return
+    
+    const item = snapshot.val()
+    const payments = item.payments || []
+    payments.splice(paymentIndex, 1)
+    
+    await update(itemRef, {
+      payments: payments.length > 0 ? payments : null,
+    })
+  }, [isReadOnly, listId])
+
+  const togglePaymentStatus = useCallback(async (itemId, memberId, isPaid) => {
+    if (isReadOnly) return
+    const itemRef = ref(database, `lists/${listId}/items/${itemId}`)
+    const snapshot = await get(itemRef)
+    if (!snapshot.exists()) return
+    
+    const item = snapshot.val()
+    const payments = item.payments || []
+    
+    if (isPaid) {
+      const existingPayment = payments.find(p => p.memberId === memberId)
+      if (!existingPayment) {
+        payments.push({
+          memberId,
+          amount: item.amount,
+          createdAt: Date.now(),
+        })
+      }
+    } else {
+      const filtered = payments.filter(p => p.memberId !== memberId)
+      payments.length = 0
+      payments.push(...filtered)
+    }
+    
+    await update(itemRef, {
+      payments: payments.length > 0 ? payments : null,
+    })
+  }, [isReadOnly, listId])
+
   const copyList = useCallback(async () => {
     const newListId = generateId()
     const newListRef = ref(database, `lists/${newListId}`)
@@ -184,37 +325,89 @@ export function useList(listId, isReadOnly = false) {
     return newListId
   }, [items, listName])
 
-  const totals = items.reduce(
-    (acc, item) => ({
-      total: acc.total + item.amount,
-      paidFromItems: acc.paidFromItems + (item.isPaid ? item.amount : 0),
-    }),
-    { total: 0, paidFromItems: 0 }
-  )
+  const calculateTotals = () => {
+    const total = items.reduce((acc, item) => acc + (item.amount || 0), 0)
+    
+    let paidFromItems = 0
+    let memberBalances = {}
+    
+    members.forEach(member => {
+      memberBalances[member.id] = { paid: 0, owed: 0 }
+    })
+    
+    items.forEach(item => {
+      const assignedTo = item.assignedTo || []
+      const payments = item.payments || []
+      
+      assignedTo.forEach(memberId => {
+        const member = members.find(m => m.id === memberId)
+        if (member) {
+          memberBalances[memberId].owed += item.amount
+        }
+      })
+      
+      payments.forEach(payment => {
+        if (memberBalances[payment.memberId]) {
+          memberBalances[payment.memberId].paid += payment.amount
+        }
+      })
+    })
+    
+    members.forEach(member => {
+      paidFromItems += memberBalances[member.id].paid
+    })
+    
+    if (isGroupMode) {
+      const memberBreakdown = members.map(member => ({
+        id: member.id,
+        name: member.name,
+        paid: memberBalances[member.id].paid,
+        owed: memberBalances[member.id].owed,
+        remaining: memberBalances[member.id].owed - memberBalances[member.id].paid,
+      }))
+      
+      return {
+        total,
+        paidFromItems,
+        totalExtraPayments: 0,
+        paid: paidFromItems,
+        remaining: total - paidFromItems,
+        memberBreakdown,
+      }
+    }
+    
+    const totalExtraPayments = extraPayments.reduce(
+      (acc, ep) => acc + (ep.amount || 0),
+      0
+    )
+    
+    const paid = paidFromItems + totalExtraPayments
+    const remaining = total - paid
+    
+    return {
+      total,
+      paidFromItems,
+      totalExtraPayments,
+      paid,
+      remaining,
+      memberBreakdown: [],
+    }
+  }
 
-  const totalExtraPayments = extraPayments.reduce(
-    (acc, ep) => acc + (ep.amount || 0),
-    0
-  )
-
-  const paid = totals.paidFromItems + totalExtraPayments
-  const remaining = totals.total - paid
+  const totals = calculateTotals()
 
   return {
     items,
     extraPayments,
+    members,
+    isGroupMode,
+    wasInGroupMode,
     loading,
     error,
     listExists,
     listName,
     isInitialized,
-    totals: {
-      total: totals.total,
-      paidFromItems: totals.paidFromItems,
-      totalExtraPayments,
-      paid,
-      remaining,
-    },
+    totals,
     addItem,
     removeItem,
     togglePaid,
@@ -227,6 +420,13 @@ export function useList(listId, isReadOnly = false) {
     ensureListExists,
     addExtraPayment,
     removeExtraPayment,
+    addMember,
+    removeMember,
+    toggleGroupMode,
+    assignMembersToItem,
+    addItemPayment,
+    removeItemPayment,
+    togglePaymentStatus,
     copyList,
   }
 }

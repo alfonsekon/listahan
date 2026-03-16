@@ -8,6 +8,20 @@
   color: var(--text-primary);
 }
 
+.request-modal .request-member-info {
+  background: var(--hover-bg);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.request-modal .request-member-info .no-member-selected {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
 .request-modal label {
   display: block;
   font-size: 0.85rem;
