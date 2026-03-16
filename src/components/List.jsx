@@ -226,6 +226,7 @@ export function List() {
   }
 
   const toggleRearrangeMode = () => {
+    if (items.length < 2) return
     setRearrangeMode(prev => !prev)
     setDraggedItemId(null)
   }
