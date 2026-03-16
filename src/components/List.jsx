@@ -135,6 +135,8 @@ export function List() {
   const [selectedMembers, setSelectedMembers] = useState([])
   const [showMemberDropdown, setShowMemberDropdown] = useState(false)
   const [draggedItemId, setDraggedItemId] = useState(null)
+  const [touchStartY, setTouchStartY] = useState(null)
+  const [touchCurrentTarget, setTouchCurrentTarget] = useState(null)
   const memberSelectRef = useRef(null)
 
   const handleDragStart = (e, itemId) => {
@@ -172,6 +174,55 @@ export function List() {
 
   const handleDragEnd = () => {
     setDraggedItemId(null)
+  }
+
+  const handleTouchStart = (e, itemId) => {
+    if (!rearrangeMode) return
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggedItemId(itemId)
+    setTouchStartY(e.touches[0].clientY)
+  }
+
+  const handleTouchMove = (e) => {
+    if (!rearrangeMode || !draggedItemId) return
+    e.preventDefault()
+    e.stopPropagation()
+    const touchY = e.touches[0].clientY
+    const elementBelow = document.elementFromPoint(e.touches[0].clientX, touchY)
+    if (elementBelow) {
+      const itemContainer = elementBelow.closest('.list-item-container')
+      if (itemContainer) {
+        const targetId = itemContainer.getAttribute('data-item-id')
+        if (targetId && targetId !== draggedItemId) {
+          setTouchCurrentTarget(targetId)
+        }
+      }
+    }
+  }
+
+  const handleTouchEnd = (e) => {
+    if (!rearrangeMode) return
+    e.preventDefault()
+    e.stopPropagation()
+    if (!draggedItemId || !touchCurrentTarget) {
+      setDraggedItemId(null)
+      setTouchStartY(null)
+      setTouchCurrentTarget(null)
+      return
+    }
+    const currentItems = [...items]
+    const draggedIndex = currentItems.findIndex(i => i.id === draggedItemId)
+    const targetIndex = currentItems.findIndex(i => i.id === touchCurrentTarget)
+    if (draggedIndex !== -1 && targetIndex !== -1) {
+      const [draggedItem] = currentItems.splice(draggedIndex, 1)
+      currentItems.splice(targetIndex, 0, draggedItem)
+      const newOrder = currentItems.map(item => item.id)
+      reorderItems(newOrder)
+    }
+    setDraggedItemId(null)
+    setTouchStartY(null)
+    setTouchCurrentTarget(null)
   }
 
   const toggleRearrangeMode = () => {
@@ -525,6 +576,9 @@ export function List() {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               isDragging={draggedItemId === item.id}
             />
           ))

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './ListItem.css'
 
-export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggle, onRemove, onUpdateName, onUpdateAmount, onAssignMembers, onUpdatePaymentStatus, onRequest, isReadOnly, rearrangeMode, onDragStart, onDragOver, onDrop, onDragEnd, isDragging }) {
+export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggle, onRemove, onUpdateName, onUpdateAmount, onAssignMembers, onUpdatePaymentStatus, onRequest, isReadOnly, rearrangeMode, onDragStart, onDragOver, onDrop, onDragEnd, onTouchStart, onTouchMove, onTouchEnd, isDragging }) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [isEditingAmount, setIsEditingAmount] = useState(false)
   const [editName, setEditName] = useState(item.name)
@@ -138,16 +138,23 @@ export function ListItem({ item, members, isGroupMode, selectedMemberId, onToggl
   return (
     <div 
       className={`list-item-container ${isDragging ? 'dragging' : ''}`}
+      data-item-id={item.id}
       draggable={rearrangeMode}
       onDragStart={(e) => rearrangeMode && onDragStart && onDragStart(e, item.id)}
       onDragOver={rearrangeMode ? onDragOver : undefined}
       onDrop={(e) => rearrangeMode && onDrop && onDrop(e, item.id)}
       onDragEnd={rearrangeMode ? onDragEnd : undefined}
+      onTouchMove={rearrangeMode ? onTouchMove : undefined}
+      onTouchEnd={rearrangeMode ? onTouchEnd : undefined}
     >
       <li className={`list-item ${isPaid ? 'paid' : ''}`}>
         {rearrangeMode ? (
           <>
-            <span className="drag-handle" title="Drag to reorder">⋮⋮</span>
+            <span 
+              className="drag-handle" 
+              title="Drag to reorder"
+              onTouchStart={(e) => rearrangeMode && onTouchStart && onTouchStart(e, item.id)}
+            >⋮⋮</span>
             <span className="item-name">{item.name}</span>
             <div className="item-members">
               {isGroupMode && renderMemberCards()}
